@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+
+    <!-- Board JavaScript File -->
+    <script src="pieces.js"></script>
+    <script src="board.js"></script>
+
+    <style>
+        * {
+            -webkit-user-select: none;
+        }
+
+        body {
+            background: #323947;
+        }
+
+        #board {
+            width: 480px;
+            margin: 50px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .cell {
+            transition: .2s;
+        }
+    </style>
+
+</head>
+
+<body onload="newGame()">
+    <div id="board"></div>
+    <div id="status"></div>
+</body>
+
+</html>

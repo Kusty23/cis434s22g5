@@ -2,8 +2,6 @@ class Piece {
     constructor(symbol, position, color) {
         this.symbol = symbol;
 
-        this.hasMoved = false;
-
         // Set position on gameboard
         this.position = position;
         gameboard[position] = this;
@@ -20,46 +18,56 @@ class Piece {
 
         this.wrapper.appendChild(this.text);
         cells[this.position].div.appendChild(this.wrapper);
-        this.updatePosition(this.position, true);
+        this.updatePosition(this.position);
 
         this.enableDragging();
+
+        this.hasMoved = false;
     }
 
     canMoveTo(position) {
         return (gameboard[position] instanceof Piece && gameboard[position].color != this.color) || !(gameboard[position] instanceof Piece);
     }
 
-    tryUpdatePosition() {
-        // Get X position
-        var newX = this.getLeft() - MARGIN;
-        newX = Math.floor(newX / CELL_SIZE);
+    /* Tries to update the position of the piece. If a position
+       is given, it will treat it as being 'placed' instead of
+       moved by a player */
+    updatePosition(position) {
+        if (position != null) {
+            // Force the piece to move to the new position
+            gameboard[this.position] = null;
+            this.position = position;
+        } else {
+            // Get X position from pos on screen
+            var newX = this.getLeft() - MARGIN;
+            newX = Math.floor(newX / CELL_SIZE);
 
-        // Get Y position
-        var newY = this.getTop() - MARGIN;
-        newY = Math.floor(newY / CELL_SIZE);
+            // Get Y position from pos on screen
+            var newY = this.getTop() - MARGIN;
+            newY = Math.floor(newY / CELL_SIZE);
 
-        var newPos = newX + (newY * 8);
+            // Get cell id
+            var newPos = newX + (newY * 8);
 
-        // Check valid move
-        if (!(this.getValidMoves().includes(newPos))) {
-            this.updatePosition(this.position);
-            return;
+            // Check if this is a valid move
+            if (this.getValidMoves().includes(newPos)) {
+                // Update the piece's position
+                gameboard[this.position] = null;
+                this.position = newPos;
+
+                // If applicable, kill opposing piece
+                if (gameboard[newPos] instanceof Piece)
+                    gameboard[newPos].kill();
+            }
         }
 
-        // Remove from current position
-        gameboard[this.position] = null;
-
-        if (gameboard[newPos] instanceof Piece)
-            gameboard[newPos].kill();
-
-        this.updatePosition(newPos);
-    }
-
-    updatePosition(pos, force) {
-        this.position = pos;
+        // Place piece in proper position in gameboard array
         gameboard[this.position] = this;
 
-        // Get X position
+        // Now the piece has moved
+        this.hasMoved = true;
+
+        // Position this within the cell
         var posX = this.position % 8;
         var posY = Math.floor(this.position / 8);
 
@@ -69,10 +77,6 @@ class Piece {
 
         var top = MARGIN + (posY * CELL_SIZE);
         this.wrapper.style.top = top + 'px';
-
-        if (!force) {
-            this.hasMoved = true;
-        }
     }
 
     kill() {
@@ -105,8 +109,8 @@ class Piece {
             document.onmousemove = drag;
             document.onmouseup = stopDragging;
 
-            var validMoves = piece.getValidMoves();
             piece.highlightValidMoves();
+            console.log(piece.getValidMoves());
         }
 
         function drag(e) {
@@ -138,7 +142,7 @@ class Piece {
             hoverCell.deselect();
 
             // Try to move piece to its current location
-            piece.tryUpdatePosition();
+            piece.updatePosition();
 
             // Stop using onmousemove()
             this.onmousemove = null;
@@ -205,12 +209,13 @@ class Rook extends Piece {
 
     getValidMoves() {
         let moves = [];
-
+        console.log(this.position);
         // Up
         for (var pos = this.position - 8; pos >= 0; pos -= 8) {
             if (gameboard[pos] instanceof Piece) {
                 if (gameboard[pos].color != this.color)
                     moves.push(pos);
+                console.log(gameboard);
                 break;
             } else {
                 moves.push(pos);

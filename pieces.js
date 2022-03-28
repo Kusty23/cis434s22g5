@@ -110,7 +110,6 @@ class Piece {
             document.onmouseup = stopDragging;
 
             piece.highlightValidMoves();
-            console.log(piece.getValidMoves());
         }
 
         function drag(e) {
@@ -209,13 +208,13 @@ class Rook extends Piece {
 
     getValidMoves() {
         let moves = [];
-        console.log(this.position);
+
         // Up
         for (var pos = this.position - 8; pos >= 0; pos -= 8) {
             if (gameboard[pos] instanceof Piece) {
                 if (gameboard[pos].color != this.color)
                     moves.push(pos);
-                console.log(gameboard);
+
                 break;
             } else {
                 moves.push(pos);

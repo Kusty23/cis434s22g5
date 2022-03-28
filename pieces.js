@@ -2,6 +2,8 @@ class Piece {
     constructor(symbol, position, color) {
         this.symbol = symbol;
 
+        this.hasMoved = false;
+
         // Set position on gameboard
         this.position = position;
         gameboard[position] = this;
@@ -18,7 +20,7 @@ class Piece {
 
         this.wrapper.appendChild(this.text);
         cells[this.position].div.appendChild(this.wrapper);
-        this.updatePosition(this.position);
+        this.updatePosition(this.position, true);
 
         this.enableDragging();
     }
@@ -53,7 +55,7 @@ class Piece {
         this.updatePosition(newPos);
     }
 
-    updatePosition(pos) {
+    updatePosition(pos, force) {
         this.position = pos;
         gameboard[this.position] = this;
 
@@ -67,6 +69,10 @@ class Piece {
 
         var top = MARGIN + (posY * CELL_SIZE);
         this.wrapper.style.top = top + 'px';
+
+        if (!force) {
+            this.hasMoved = true;
+        }
     }
 
     kill() {
@@ -183,7 +189,7 @@ class Pawn extends Piece {
             return moves;
 
         // Move forward 2 if not yet moved
-        if (!(gameboard[this.position + forward * 2] instanceof Piece))
+        if (!this.hasMoved && !(gameboard[this.position + forward * 2] instanceof Piece))
             moves.push(this.position + forward * 2);
 
         return moves;

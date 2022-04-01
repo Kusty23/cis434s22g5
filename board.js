@@ -2,6 +2,7 @@ var gameboard = [];
 var cells = [];
 
 var status;
+var inCheck;
 
 const PAWN = '♟';
 const KNIGHT = '♞';
@@ -184,20 +185,15 @@ function isCheck() {
         }
     }
 
-    for (var i in gameboard) {
-        var piece = gameboard[i];
-
-        if (piece instanceof Piece && piece.color == 'black') {
-            var moves = piece.getValidMoves();
-
-            if (moves.length > 0) {
-                if (moves.includes(parseInt(whiteKingPos))) {
-                    setStatus('check');
-                    break;
-                }
-            }
-        }
-
+    if (ATTACK_BLACK[whiteKingPos] == 1) {
+        setStatus('white in check');
+        inCheck = 'white';
+    } else if (ATTACK_WHITE[blackKingPos] == 1) {
+        setStatus('black in check');
+        inCheck = 'black';
+    }
+    else {
         setStatus('running');
+        inCheck = '';
     }
 }

@@ -10,32 +10,16 @@
     <script src="board.js"></script>
     <script src="chess.js"></script>
 
-    <style>
-        * {
-            -webkit-user-select: none;
-        }
-
-        body {
-            background: #323947;
-        }
-
-        #board {
-            width: 480px;
-            margin: 50px;
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .cell {
-            transition: .2s;
-        }
-    </style>
+    <link rel="stylesheet" href="./board.css">
 
 </head>
 
 <body onload="newGame()">
     <div id="board"></div>
     <div id="status"></div>
+    <div id="win">
+        CHECKMATE!
+    </div>
     <button onclick="showBlackAttacks()">Show Black Attacks</button>
     <button onclick="showWhiteAttacks()">Show White Attacks</button>
 </body>

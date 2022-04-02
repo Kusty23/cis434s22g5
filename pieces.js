@@ -1,16 +1,8 @@
 let ATTACK_WHITE = [];
 let ATTACK_BLACK = [];
-let CAPTURE_WHITE = [];
-let CAPTURE_BLACK = [];
-let PUSH_WHITE = [];
-let PUSH_BLACK = [];
 
 ATTACK_WHITE.fill(1);
 ATTACK_BLACK.fill(1);
-CAPTURE_WHITE.fill(1);
-CAPTURE_BLACK.fill(1);
-PUSH_WHITE.fill(1);
-PUSH_BLACK.fill(1);
 
 let WHITE_KING;
 let BLACK_KING;
@@ -24,6 +16,15 @@ class Piece {
         gameboard[position] = this;
 
         this.color = color;
+
+        if (color == 'white') {
+            whitePieces.push(this);
+        } else {
+            blackPieces.push(this);
+        }
+
+        this.active = false;
+        this.alive = true;
 
         this.wrapper = document.createElement('div');
         this.text = document.createTextNode(this.symbol);
@@ -50,6 +51,7 @@ class Piece {
        is given, it will treat it as being 'placed' instead of
        moved by a player */
     updatePosition(position) {
+        var oldPosition = this.position;
         if (position != null) {
             // Force the piece to move to the new position
             gameboard[this.position] = null;
@@ -81,9 +83,6 @@ class Piece {
         // Place piece in proper position in gameboard array
         gameboard[this.position] = this;
 
-        // Now the piece has moved
-        this.hasMoved = true;
-
         // Position this within the cell
         var posX = this.position % 8;
         var posY = Math.floor(this.position / 8);
@@ -94,6 +93,13 @@ class Piece {
 
         var top = MARGIN + (posY * CELL_SIZE);
         this.wrapper.style.top = top + 'px';
+
+        if (this.position != oldPosition) {
+            // Now the piece has moved
+            this.hasMoved = true;
+        }
+
+        return this.position != oldPosition;
     }
 
     kill() {
@@ -118,15 +124,17 @@ class Piece {
         wrapper.onmousedown = startDragging;
 
         function startDragging(e) {
-            // Get initial Position
-            posX = e.clientX;
-            posY = e.clientY;
+            if (piece.active) {
+                // Get initial Position
+                posX = e.clientX;
+                posY = e.clientY;
 
-            // Set mouse listener methods
-            document.onmousemove = drag;
-            document.onmouseup = stopDragging;
+                // Set mouse listener methods
+                document.onmousemove = drag;
+                document.onmouseup = stopDragging;
 
-            piece.highlightValidMoves();
+                piece.highlightValidMoves();
+            }
         }
 
         function drag(e) {
@@ -152,22 +160,30 @@ class Piece {
         }
 
         function stopDragging(e) {
+
             piece.dehighlightValidMoves();
 
             // Deselect hoverCell
             hoverCell.deselect();
 
             // Try to move piece to its current location
-            piece.updatePosition();
+            var changed = piece.updatePosition();
 
             // Stop using onmousemove()
             this.onmousemove = null;
 
-            ATTACK_BLACK = generateBlackAttackMap();
-            ATTACK_WHITE = generateWhiteAttackMap();
+            if (changed) {
+                ATTACK_BLACK = generateBlackAttackMap();
+                ATTACK_WHITE = generateWhiteAttackMap();
 
-            isCheck();
+                isCheck();
+
+                whiteTurn = !whiteTurn;
+                setStatus(whiteTurn);
+                playTurn();
+            }
         }
+
     }
 
     highlightValidMoves() {
@@ -220,15 +236,29 @@ class Pawn extends Piece {
         let forward = (this.color == 'white') ? -8 : +8;
 
         // Move forward one
-        if (!(gameboard[this.position + forward] instanceof Piece))
+        if (!(gameboard[this.position + forward] instanceof Piece)) {
             moves.push(this.position + forward);
-        else
-            return moves;
 
-        // Move forward 2 if not yet moved
-        if (!this.hasMoved && !(gameboard[this.position + forward * 2] instanceof Piece))
-            moves.push(this.position + forward * 2);
+            // Move forward 2 if not yet moved
+            if (!this.hasMoved && !(gameboard[this.position + forward * 2] instanceof Piece))
+                moves.push(this.position + forward * 2);
+        }
 
+        // Diagonal Attacks
+        let f1 = this.position + forward;
+
+        if (parseInt((f1 - 1) / 8) * 8 == parseInt(f1 / 8) * 8) {
+            if (gameboard[f1 - 1] instanceof Piece && gameboard[f1 - 1].color != this.color) {
+                moves.push(f1 - 1);
+            }
+        }
+
+        if (parseInt((f1 + 1) / 8) * 8 == parseInt(f1 / 8) * 8) {
+            if (gameboard[f1 + 1] instanceof Piece && gameboard[f1 + 1].color != this.color) {
+                moves.push(f1 + 1);
+            }
+        }
+        
         if (inCheck == this.color) {
             moves = checkedByOneFilter(this, moves);
         }
@@ -649,11 +679,17 @@ class King extends Piece {
 
         removeAttackedSquares(this, moves);
 
-        if (inCheck == this.color) {
-            moves = checkedByOneFilter(this, moves);
-        }
-
         return moves;
+    }
+}
+
+function getPieceFromWrapper(wrapper) {
+    for (var i = 0; i < 64; i++) {
+        if (gameboard[i] instanceof Piece) {
+
+            if (gameboard[i].wrapper.isEqualNode(wrapper))
+                return gameboard[i];
+        }
     }
 }
 
@@ -662,6 +698,7 @@ function generateWhiteAttackMap() {
     for (var i = 0; i < 64; i++) {
         if (gameboard[i] instanceof Piece && gameboard[i].color == 'white') {
             var attacks = gameboard[i].getAttacks();
+
             for (var j = 0; j < attacks.length; j++) {
                 attackedSquares[attacks[j]] = 1;
             }
@@ -814,7 +851,7 @@ function getSliderDiagonalAttacks(piece, attacks) {
 }
 
 function removeAttackedSquares(piece, moves) {
-    if (piece.color = 'white') {
+    if (piece.color == 'white') {
         for (var i = 0; i < moves.length; i++) {
             if (ATTACK_BLACK[moves[i]] == 1) {
                 moves.splice(i, 1);
@@ -941,13 +978,13 @@ function generatePushMap(defender, attacker, moves) {
             if (attPos % 8 < kingPos % 8) {
                 // If int(attPos / 8) < int(kingPos / 8) then ray goes up-left
                 if (parseInt(attPos / 8) < parseInt(kingPos / 8)) {
-                    for (var pos=kingPos-9; attPos<=pos; pos-=9) {
+                    for (var pos = kingPos - 9; attPos <= pos; pos -= 9) {
                         pushMoves.push(pos);
                     }
                 }
                 // Else the ray goes down-left
                 else {
-                    for (var pos=kingPos+7; attPos>=pos; pos+=7) {
+                    for (var pos = kingPos + 7; attPos >= pos; pos += 7) {
                         pushMoves.push(pos);
                     }
                 }
@@ -956,13 +993,13 @@ function generatePushMap(defender, attacker, moves) {
             else {
                 // If int(attPos / 8) < int(kingPos / 8) then ray goes up-right
                 if (parseInt(attPos / 8) < parseInt(kingPos / 8)) {
-                    for (var pos=kingPos-7; attPos<=pos; pos-=7) {
+                    for (var pos = kingPos - 7; attPos <= pos; pos -= 7) {
                         pushMoves.push(pos);
                     }
                 }
                 // Else the ray goes down-right
                 else {
-                    for (var pos=kingPos+9; attPos>=pos; pos+=9) {
+                    for (var pos = kingPos + 9; attPos >= pos; pos += 9) {
                         pushMoves.push(pos);
                     }
                 }

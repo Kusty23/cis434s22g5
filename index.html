@@ -1,11 +1,33 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title>Online Chess</title>
-    </head>
-    <body>
-        <p>This will become a menu page but for now click the button below to go to the game page.</p>
-        <button><a href="./board.html">Board</a></button>
-    </body>
+
+<head>
+    <meta charset="utf-8">
+    <title>Online Chess</title>
+
+    <link rel="stylesheet" href="./index.css">
+</head>
+
+<body>
+    <div class="main">
+        <div class="main-title">
+            <h1>CHESS</h1>
+        </div>
+
+        <form method="GET" action="./board.html">
+            <!-- PVP or PVC -->
+            <div class="menu-checkbox">
+                <input type="checkbox" class="checkbox" name="pvc">
+                <label for="vehicle1"> Play against computer</label>
+            </div>
+
+
+            <!-- Play Game Button -->
+            <input class="menu-button" type="submit" value="Play Game">
+        </form>
+
+    </div>
+    <p class="subtitle">CIS 434 Final Project Group 5 - Ryan Kustaborder, John Langel, and Max Kulnane</p>
+</body>
+
 </html>

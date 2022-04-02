@@ -1,9 +1,3 @@
-var gameboard = [];
-var cells = [];
-
-var status;
-var inCheck;
-
 const PAWN = '♟';
 const KNIGHT = '♞';
 const BISHOP = '♝';
@@ -24,14 +18,6 @@ const BLACK = false;
 
 const CELL_SIZE = 60;
 const MARGIN = 50;
-
-function newGame() {
-    genBoard();
-    genPieces();
-    addCellIds();
-
-    setStatus('running');
-}
 
 function setStatus(message) {
     if (document.body.childElementCount > 1)
@@ -171,29 +157,4 @@ function screenToGamePos(x, y) {
     let gameY = Math.floor((y - MARGIN) / CELL_SIZE);
 
     return gameX + (gameY * 8);
-}
-
-function isCheck() {
-    var whiteKingPos, blackKingPos;
-
-    for (var i in gameboard) {
-        if (gameboard[i] instanceof Piece && gameboard[i].symbol == KING) {
-            if (gameboard[i].color == 'white')
-                whiteKingPos = i;
-            else
-                blackKingPos = i;
-        }
-    }
-
-    if (ATTACK_BLACK[whiteKingPos] == 1) {
-        setStatus('white in check');
-        inCheck = 'white';
-    } else if (ATTACK_WHITE[blackKingPos] == 1) {
-        setStatus('black in check');
-        inCheck = 'black';
-    }
-    else {
-        setStatus('running');
-        inCheck = '';
-    }
 }

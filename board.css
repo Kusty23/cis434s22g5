@@ -1,0 +1,31 @@
+* {
+    -webkit-user-select: none;
+}
+
+body {
+    background: #323947;
+}
+
+#board {
+    width: 480px;
+    margin: 50px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.cell {
+    transition: .2s;
+}
+
+#win {
+    visibility: hidden;
+    position: absolute;
+    background-color: red;
+    text-align: center;
+    color: white;
+    font-size: 50px;
+    font-family: sans-serif;
+    top: 30%;
+    width: 100vw;
+    left: 0;
+}

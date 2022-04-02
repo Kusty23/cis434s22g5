@@ -258,7 +258,7 @@ class Pawn extends Piece {
                 moves.push(f1 + 1);
             }
         }
-        
+
         if (inCheck == this.color) {
             moves = checkedByOneFilter(this, moves);
         }
@@ -429,6 +429,145 @@ class Bishop extends Piece {
             if (gameboard[pos] instanceof Piece || pos % 8 == 0)
                 break;
         }
+
+        if (inCheck == this.color) {
+            moves = checkedByOneFilter(this, moves);
+        }
+
+        return moves;
+    }
+}
+
+class Knight extends Piece {
+    constructor(position, color) {
+        super(KNIGHT, position, color);
+
+        this.hasMoved = false;
+    }
+
+    getAttacks() {
+        let attacks = [];
+
+        var pos;
+
+        // Left-Down
+        pos = this.position - 2 + 8;
+        if (parseInt(pos / 8) == parseInt((this.position + 8) / 8)) {
+            attacks.push(pos);
+        }
+
+        // Left-Up
+        pos = this.position - 2 - 8;
+        if (parseInt(pos / 8) == parseInt((this.position - 8) / 8)) {
+            attacks.push(pos);
+        }
+
+        // Up-Left
+        pos = this.position - 1 - 16;
+        if (parseInt(pos / 8) == parseInt((this.position - 16) / 8)) {
+            attacks.push(pos);
+        }
+
+        // Up-Right
+        pos = this.position + 1 - 16;
+        if (parseInt(pos / 8) == parseInt((this.position - 16) / 8)) {
+            attacks.push(pos);
+        }
+
+        // Right-Up
+        pos = this.position + 2 - 8;
+        if (parseInt(pos / 8) == parseInt((this.position - 8) / 8)) {
+            attacks.push(pos);
+        }
+
+        // Right-Down
+        pos = this.position + 2 + 8;
+        if (parseInt(pos / 8) == parseInt((this.position + 8) / 8)) {
+            attacks.push(pos);
+        }
+
+        // Down-Right
+        pos = this.position + 1 + 16;
+        if (parseInt(pos / 8) == parseInt((this.position + 16) / 8)) {
+            attacks.push(pos);
+        }
+
+        // Down - Left
+        pos = this.position - 1 + 16;
+        if (parseInt(pos / 8) == parseInt((this.position + 16) / 8)) {
+            attacks.push(pos);
+        }
+
+        attacks = attacks.filter(function checkBounds(pos) {
+            return pos >= 0 && pos < 64;
+        })
+
+        return attacks;
+    }
+
+    getValidMoves() {
+        let moves = [];
+        var pos;
+
+        // Left-Down
+        pos = this.position - 2 + 8;
+        if (parseInt(pos / 8) == parseInt((this.position + 8) / 8)) {
+            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+                moves.push(pos);
+        }
+
+        // Left-Up
+        pos = this.position - 2 - 8;
+        if (parseInt(pos / 8) == parseInt((this.position - 8) / 8)) {
+            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+                moves.push(pos);
+        }
+
+        // Up-Left
+        pos = this.position - 1 - 16;
+        if (parseInt(pos / 8) == parseInt((this.position - 16) / 8)) {
+            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+                moves.push(pos);
+        }
+
+        // Up-Right
+        pos = this.position + 1 - 16;
+        if (parseInt(pos / 8) == parseInt((this.position - 16) / 8)) {
+            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+                moves.push(pos);
+        }
+
+        // Right-Up
+        pos = this.position + 2 - 8;
+        if (parseInt(pos / 8) == parseInt((this.position - 8) / 8)) {
+            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+                moves.push(pos);
+        }
+
+        // Right-Down
+        pos = this.position + 2 + 8;
+        if (parseInt(pos / 8) == parseInt((this.position + 8) / 8)) {
+            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+                moves.push(pos);
+        }
+
+        // Down-Right
+        pos = this.position + 1 + 16;
+        if (parseInt(pos / 8) == parseInt((this.position + 16) / 8)) {
+            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+                moves.push(pos);
+        }
+
+        // Down - Left
+        pos = this.position - 1 + 16;
+        if (parseInt(pos / 8) == parseInt((this.position + 16) / 8)) {
+            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+                moves.push(pos);
+        }
+
+        moves = moves.filter(function checkBounds(pos) {
+            return pos >= 0 && pos < 64;
+        })
 
         if (inCheck == this.color) {
             moves = checkedByOneFilter(this, moves);
@@ -859,9 +998,11 @@ function removeAttackedSquares(piece, moves) {
             }
         }
     } else {
-        if (ATTACK_WHITE[moves[i]] == 1) {
-            moves.splice(i, 1);
-            i--;
+        for (var i = 0; i < moves.length; i++) {
+            if (ATTACK_WHITE[moves[i]] == 1) {
+                moves.splice(i, 1);
+                i--;
+            }
         }
     }
 }
@@ -889,57 +1030,46 @@ function showBlackAttacks() {
 function checkedByOneFilter(piece, moves) {
     let attackerPos = -1;
 
-    if (piece.color == 'white') {
+    if (piece.color == 'white' || true) {
         for (var i = 0; i < 64; i++) {
             var attacker = gameboard[i];
-            if (attacker instanceof Piece && attacker.color == 'black') {
+            if (attacker instanceof Piece && attacker.color != piece.color) {
                 var attackerMoves = attacker.getValidMoves();
                 for (var j = 0; j < attackerMoves.length; j++) {
-                    if (attackerMoves[j] == WHITE_KING.position) {
-                        attackerPos = i;
-                        break;
+                    if (piece.color == 'white') {
+                        if (attackerMoves[j] == WHITE_KING.position) {
+                            attackerPos = i;
+                            break;
+                        }
+                    } else {
+                        if (attackerMoves[j] == BLACK_KING.position) {
+                            attackerPos = i;
+                            break;
+                        
                     }
                 }
             }
-        }
-
-        var validMoves = generatePushMap(piece, gameboard[attackerPos], moves);
-
-        //var validMoves = [];
-        if (moves.includes(attackerPos)) {
-            validMoves.push(attackerPos);
-            return validMoves;
-        } else {
-            return validMoves;
-        }
-    } else {
-        for (var i = 0; i < 64; i++) {
-            var attacker = gameboard[i];
-            if (attacker.color == 'black') {
-                var attackerMoves = attacker.getValidMoves();
-                for (var j = 0; j < attackerMoves.length; j++) {
-                    if (attackerMoves[j] == BLACK_KING.position) {
-                        attackerPos = i;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (moves.includes(attackerPos)) {
-            moves = [attackerPos];
-        } else {
-            moves = [];
         }
     }
+
+    var validMoves = generatePushMap(piece, gameboard[attackerPos], moves);
+
+    if (moves.includes(attackerPos)) {
+        validMoves.push(attackerPos);
+        return validMoves;
+    } else {
+        return validMoves;
+    }
+}
 }
 
 function generatePushMap(defender, attacker, moves) {
 
     pushMoves = [];
-
-    if (attacker instanceof Rook || attacker instanceof Queen) {
+    console.log(attacker);
+    if (attacker instanceof Rook || attacker instanceof Queen || attacker instanceof Bishop) {
         let kingPos = (defender.color == 'white') ? WHITE_KING.position : BLACK_KING.position;
+        console.log(kingPos);
         let attPos = attacker.position;
 
         // If attPos is in the same column, ray is vertical
@@ -1006,6 +1136,8 @@ function generatePushMap(defender, attacker, moves) {
             }
         }
     }
+
+    console.log(pushMoves);
 
     var validMoves = [];
 

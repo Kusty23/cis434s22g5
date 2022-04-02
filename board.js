@@ -109,12 +109,12 @@ function addCellIds() {
 function genPieces() {
     // Black Pieces
     new Rook(0, 'black');
-    new Piece(KNIGHT, 1, 'black');
+    new Knight(1, 'black');
     new Bishop(2, 'black');
     new Queen(3, 'black');
     new King(4, 'black');
     new Bishop(5, 'black');
-    new Piece(KNIGHT, 6, 'black');
+    new Knight(6, 'black');
     new Rook(7, 'black');
 
     new Pawn(8, 'black');
@@ -137,12 +137,12 @@ function genPieces() {
     new Pawn(55, 'white');
 
     new Rook(56, 'white');
-    new Piece(KNIGHT, 57, 'white');
+    new Knight(57, 'white');
     new Bishop(58, 'white');
     new Queen(59, 'white');
     new King(60, 'white');
     new Bishop(61, 'white');
-    new Piece(KNIGHT, 62, 'white');
+    new Knight(35, 'white');
     new Rook(63, 'white');
 
     // Create the HTML elements for each piece

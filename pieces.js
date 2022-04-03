@@ -7,9 +7,14 @@ ATTACK_BLACK.fill(1);
 let WHITE_KING;
 let BLACK_KING;
 
+let id = 0;
+
 class Piece {
     constructor(symbol, position, color) {
         this.symbol = symbol;
+
+        this.id = 'piece' + id;
+        id++;
 
         // Set position on gameboard
         this.position = position;
@@ -27,6 +32,7 @@ class Piece {
         this.alive = true;
 
         this.wrapper = document.createElement('div');
+        this.wrapper.setAttribute('id', this.id);
         this.text = document.createTextNode(this.symbol);
     }
 
@@ -50,12 +56,17 @@ class Piece {
     /* Tries to update the position of the piece. If a position
        is given, it will treat it as being 'placed' instead of
        moved by a player */
-    updatePosition(position) {
+    updatePosition(position, computer) {
         var oldPosition = this.position;
         if (position != null) {
             // Force the piece to move to the new position
             gameboard[this.position] = null;
             this.position = position;
+            if (computer == true) {
+                // If applicable, kill opposing piece
+                if (gameboard[position] instanceof Piece)
+                    gameboard[position].kill();
+            }
         } else {
             // Get X position from pos on screen
             var newX = this.getLeft() - margin_left;
@@ -88,16 +99,29 @@ class Piece {
         var posY = Math.floor(this.position / 8);
 
         // Center within cell
-        var left = margin_left + (posX * CELL_SIZE) + margin_left / 100;
-        left = parseInt(cells[this.position].div.getBoundingClientRect().left) + CELL_SIZE / 6;
-        this.wrapper.style.left = left + 'px';
-
+        var left = parseInt(cells[this.position].div.getBoundingClientRect().left) + CELL_SIZE / 6;
         var top = margin_top + (posY * CELL_SIZE);
-        this.wrapper.style.top = top + 'px';
+
+        // Animate it if the computer is moving to help player see the move made
+        if (computer) {
+            $('#' + this.id).animate({ left: left + 'px', top: top + 'px' });
+        }
+        else {
+            this.wrapper.style.left = left + 'px';
+            this.wrapper.style.top = top + 'px';
+        }
 
         if (this.position != oldPosition) {
             // Now the piece has moved
             this.hasMoved = true;
+            ATTACK_BLACK = generateBlackAttackMap();
+            ATTACK_WHITE = generateWhiteAttackMap();
+
+            isCheck();
+
+            whiteTurn = !whiteTurn;
+            setStatus(whiteTurn);
+            playTurn();
         }
 
         return this.position != oldPosition;
@@ -173,17 +197,6 @@ class Piece {
 
             // Stop using onmousemove()
             this.onmousemove = null;
-
-            if (changed) {
-                ATTACK_BLACK = generateBlackAttackMap();
-                ATTACK_WHITE = generateWhiteAttackMap();
-
-                isCheck();
-
-                whiteTurn = !whiteTurn;
-                setStatus(whiteTurn);
-                playTurn();
-            }
         }
 
     }
@@ -840,6 +853,10 @@ function generateWhiteAttackMap() {
         if (gameboard[i] instanceof Piece && gameboard[i].color == 'white') {
             var attacks = gameboard[i].getAttacks();
 
+            if (attacks == null) {
+                continue;
+            }
+
             for (var j = 0; j < attacks.length; j++) {
                 attackedSquares[attacks[j]] = 1;
             }
@@ -854,6 +871,9 @@ function generateBlackAttackMap() {
     for (var i = 0; i < 64; i++) {
         if (gameboard[i] instanceof Piece && gameboard[i].color == 'black') {
             var attacks = gameboard[i].getAttacks();
+            if (attacks == null) {
+                continue;
+            }
             for (var j = 0; j < attacks.length; j++) {
                 attackedSquares[attacks[j]] = 1;
             }

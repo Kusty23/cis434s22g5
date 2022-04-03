@@ -35,6 +35,7 @@ function playTurn() {
 
         if (getAllWhiteMoves().length == 0) {
             endGame();
+            return;
         }
 
         activateWhite();
@@ -45,9 +46,22 @@ function playTurn() {
 
         if (getAllBlackMoves().length == 0) {
             endGame();
+            return;
         }
 
         activateBlack();
+
+        let moved = false;
+        while (!moved) {
+            let piece = blackPieces[parseInt(Math.random() * blackPieces.length)];
+
+            let moves = piece.getValidMoves();
+            if (piece.alive && moves.length > 0) {
+                let move = moves[parseInt(Math.random() * moves.length)];
+                piece.updatePosition(move, true);
+                moved = true;
+            }
+        }
     }
 }
 

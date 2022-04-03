@@ -104,6 +104,7 @@ class Piece {
 
     kill() {
         this.wrapper.style.visibility = 'hidden';
+        this.alive = false;
     }
 
     getLeft() {
@@ -1045,31 +1046,29 @@ function checkedByOneFilter(piece, moves) {
                         if (attackerMoves[j] == BLACK_KING.position) {
                             attackerPos = i;
                             break;
-                        
+
+                        }
                     }
                 }
             }
         }
-    }
 
-    var validMoves = generatePushMap(piece, gameboard[attackerPos], moves);
+        var validMoves = generatePushMap(piece, gameboard[attackerPos], moves);
 
-    if (moves.includes(attackerPos)) {
-        validMoves.push(attackerPos);
-        return validMoves;
-    } else {
-        return validMoves;
+        if (moves.includes(attackerPos)) {
+            validMoves.push(attackerPos);
+            return validMoves;
+        } else {
+            return validMoves;
+        }
     }
-}
 }
 
 function generatePushMap(defender, attacker, moves) {
 
     pushMoves = [];
-    console.log(attacker);
     if (attacker instanceof Rook || attacker instanceof Queen || attacker instanceof Bishop) {
         let kingPos = (defender.color == 'white') ? WHITE_KING.position : BLACK_KING.position;
-        console.log(kingPos);
         let attPos = attacker.position;
 
         // If attPos is in the same column, ray is vertical
@@ -1136,8 +1135,6 @@ function generatePushMap(defender, attacker, moves) {
             }
         }
     }
-
-    console.log(pushMoves);
 
     var validMoves = [];
 

@@ -142,7 +142,7 @@ function genPieces() {
     new Queen(59, 'white');
     new King(60, 'white');
     new Bishop(61, 'white');
-    new Knight(35, 'white');
+    new Knight(62, 'white');
     new Rook(63, 'white');
 
     // Create the HTML elements for each piece

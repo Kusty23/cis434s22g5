@@ -36,6 +36,7 @@ function playTurn() {
         deactivateWhite();
 
         if (getAllBlackMoves().length == 0) {
+            console.log("gameover");
             endGame();
         }
 
@@ -113,11 +114,21 @@ function getAllWhiteMoves() {
 function getAllBlackMoves() {
     let moves = [];
 
+    console.log("getAllBlackMoves");
+
     for (var i = 0; i < blackPieces.length; i++) {
+        if (blackPieces[i].alive == false ) {
+            continue;
+        }
+        if (blackPieces[i].getValidMoves().length > 0) {
+            console.log(blackPieces[i]);
+        }
         for (var j = 0; j < blackPieces[i].getValidMoves().length; j++) {
             moves.push(blackPieces[i].getValidMoves()[j]);
         }
     }
+
+    console.log(moves);
 
     return moves;
 }

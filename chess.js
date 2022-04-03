@@ -10,6 +10,14 @@ var checkmate = false;
 var whiteTurn = true;
 var madeMove = false;
 
+function onResize() {
+    for (var i=0; i<64; i++) {
+        if (gameboard[i] instanceof Piece) {
+            gameboard[i].updatePosition(i);
+        }
+    }
+}
+
 function newGame() {
     genBoard();
     genPieces();

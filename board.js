@@ -17,7 +17,8 @@ const WHITE = true;
 const BLACK = false;
 
 const CELL_SIZE = 60;
-const MARGIN = 50;
+let margin_top;
+let margin_left;
 
 function setStatus(message) {
     if (document.body.childElementCount > 1)
@@ -72,6 +73,9 @@ class Cell {
 function genBoard() {
     var board = document.getElementById('board');
     var white = true;
+
+    margin_top = parseInt(board.getBoundingClientRect().top);
+    margin_left = parseInt(board.getBoundingClientRect().left);
 
     // Generate Cells
     for (var i = 0; i < 64; i++) {
@@ -153,8 +157,8 @@ function genPieces() {
 }
 
 function screenToGamePos(x, y) {
-    let gameX = Math.floor((x - MARGIN) / CELL_SIZE);
-    let gameY = Math.floor((y - MARGIN) / CELL_SIZE);
+    let gameX = Math.floor((x - margin_left) / CELL_SIZE);
+    let gameY = Math.floor((y - margin_top) / CELL_SIZE);
 
     return gameX + (gameY * 8);
 }

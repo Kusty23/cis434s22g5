@@ -58,11 +58,11 @@ class Piece {
             this.position = position;
         } else {
             // Get X position from pos on screen
-            var newX = this.getLeft() - MARGIN;
+            var newX = this.getLeft() - margin_left;
             newX = Math.floor(newX / CELL_SIZE);
 
             // Get Y position from pos on screen
-            var newY = this.getTop() - MARGIN;
+            var newY = this.getTop() - margin_top;
             newY = Math.floor(newY / CELL_SIZE);
 
             // Get cell id
@@ -88,10 +88,11 @@ class Piece {
         var posY = Math.floor(this.position / 8);
 
         // Center within cell
-        var left = MARGIN + (posX * CELL_SIZE) + 20;
+        var left = margin_left + (posX * CELL_SIZE) + margin_left / 100;
+        left = parseInt(cells[this.position].div.getBoundingClientRect().left) + CELL_SIZE / 6;
         this.wrapper.style.left = left + 'px';
 
-        var top = MARGIN + (posY * CELL_SIZE);
+        var top = margin_top + (posY * CELL_SIZE);
         this.wrapper.style.top = top + 'px';
 
         if (this.position != oldPosition) {

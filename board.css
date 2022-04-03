@@ -4,6 +4,9 @@
 
 body {
     background: #323947;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #board {

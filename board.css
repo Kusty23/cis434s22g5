@@ -18,7 +18,6 @@ body {
 }
 
 #win {
-    visibility: hidden;
     position: absolute;
     background-color: red;
     text-align: center;
@@ -26,6 +25,10 @@ body {
     font-size: 50px;
     font-family: sans-serif;
     top: 30%;
-    width: 100vw;
+    width: 0;
     left: 0;
+}
+
+#win-text {
+    opacity: 0;
 }

@@ -36,7 +36,6 @@ function playTurn() {
         deactivateWhite();
 
         if (getAllBlackMoves().length == 0) {
-            console.log("gameover");
             endGame();
         }
 
@@ -70,7 +69,29 @@ function isCheck() {
 
 function endGame(winner) {
     let banner = document.getElementById('win');
-    banner.style.visibility = 'visible';
+
+    banner.style.opacity = '100%';
+
+    $('#win').animate({ width: '100%' }, {
+        easing: 'swing',
+        duration: 500,
+        complete: function() {
+            $('#win-text').animate({ opacity: '100%' }, {
+                easing: 'swing',
+                duration: 1000,
+                complete: function() {
+                    $('#win-text').animate({ opacity: '0' }, {
+                        easing: 'swing',
+                        duration: 2000,
+                        complete: function() {
+                            $('#win').animate({ opacity: '0' });
+                            $('#win').animate({ width: '0' });
+                        }});
+                }
+            });
+
+        }
+    });
 }
 
 function activateWhite() {
@@ -114,21 +135,14 @@ function getAllWhiteMoves() {
 function getAllBlackMoves() {
     let moves = [];
 
-    console.log("getAllBlackMoves");
-
     for (var i = 0; i < blackPieces.length; i++) {
-        if (blackPieces[i].alive == false ) {
+        if (blackPieces[i].alive == false) {
             continue;
-        }
-        if (blackPieces[i].getValidMoves().length > 0) {
-            console.log(blackPieces[i]);
         }
         for (var j = 0; j < blackPieces[i].getValidMoves().length; j++) {
             moves.push(blackPieces[i].getValidMoves()[j]);
         }
     }
-
-    console.log(moves);
 
     return moves;
 }

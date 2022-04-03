@@ -5,7 +5,10 @@
     <meta charset="utf-8">
     <title>Chess</title>
 
-    <!-- Board JavaScript File -->
+    <!-- JQuery -->
+    <script src="./jquery-3.6.0.js"></script>
+
+    <!-- Internal JS Files -->
     <script src="pieces.js"></script>
     <script src="board.js"></script>
     <script src="chess.js"></script>
@@ -16,13 +19,16 @@
 
 <body onload="newGame()">
     <div id="board"></div>
-    <div id="status"></div>
     <div id="win">
-        CHECKMATE!
+        <p id="win-text">CHECKMATE!</p>
     </div>
-    <button onclick="showBlackAttacks()">Show Black Attacks</button>
-    <button onclick="showWhiteAttacks()">Show White Attacks</button>
-    <button onclick="endGame()">End Game</button>
+    <div class="dev">
+        <div id="status"></div>
+        <button onclick="showBlackAttacks()">Show Black Attacks</button>
+        <button onclick="showWhiteAttacks()">Show White Attacks</button>
+        <button onclick="endGame()">End Game</button>
+    </div>
+
 </body>
 
 </html>

@@ -9,6 +9,7 @@ let BLACK_KING;
 
 let id = 0;
 
+// Container class for piece elements
 class Piece {
     constructor(symbol, position, color) {
         this.symbol = symbol;
@@ -36,6 +37,7 @@ class Piece {
         this.text = document.createTextNode(this.symbol);
     }
 
+    // Creates the html element and positions it correctly
     create() {
         this.wrapper.style.color = this.color;
         this.wrapper.style.position = 'absolute';
@@ -49,6 +51,7 @@ class Piece {
         this.hasMoved = false;
     }
 
+    // Checks if a square is empty or has an enemy piece
     canMoveTo(position) {
         return (gameboard[position] instanceof Piece && gameboard[position].color != this.color) || !(gameboard[position] instanceof Piece);
     }
@@ -127,19 +130,23 @@ class Piece {
         return this.position != oldPosition;
     }
 
+    // Kills the piece, making it no longer counted in move generation
     kill() {
         this.wrapper.style.visibility = 'hidden';
         this.alive = false;
     }
 
+    // Gets the left position relative to board
     getLeft() {
         return parseInt((this.wrapper.style.left).slice(0, -2)) + (this.wrapper.clientWidth / 2);
     }
 
+    // Gets top position relative to board
     getTop() {
         return parseInt((this.wrapper.style.top).slice(0, -2)) + (this.wrapper.clientHeight / 2);
     }
 
+    // Set up drag and drop behavior
     enableDragging() {
         var delX, delY, posX, posY;
 
@@ -159,6 +166,7 @@ class Piece {
                 document.onmousemove = drag;
                 document.onmouseup = stopDragging;
 
+                // Highlight all valid moves for this piece
                 piece.highlightValidMoves();
             }
         }
@@ -186,11 +194,13 @@ class Piece {
         }
 
         function stopDragging(e) {
-
+            // dehighlight any cells to reset for next piece
             piece.dehighlightValidMoves();
 
             // Deselect hoverCell
-            hoverCell.deselect();
+            if (hoverCell) {
+                hoverCell.deselect();
+            }
 
             // Try to move piece to its current location
             var changed = piece.updatePosition();
@@ -201,6 +211,7 @@ class Piece {
 
     }
 
+    // Highlights all valid moves
     highlightValidMoves() {
         var moves = this.getValidMoves();
         for (var i = 0; i < moves.length; i++) {
@@ -208,6 +219,7 @@ class Piece {
         }
     }
 
+    // Unhighlights any valid moves
     dehighlightValidMoves() {
         var moves = this.getValidMoves();
         for (var i = 0; i < moves.length; i++) {
@@ -215,15 +227,18 @@ class Piece {
         }
     }
 
+    // Gets all squares that are attacked by this piece
     getAttacks() {
         return [];
     }
 
+    // Gets all valid moves for this piece
     getValidMoves() {
         return [];
     }
 }
 
+// Pawn subclass of Piece
 class Pawn extends Piece {
     constructor(position, color) {
         super(PAWN, position, color);
@@ -236,9 +251,11 @@ class Pawn extends Piece {
 
         let forward = (this.color == 'white') ? this.position - 8 : this.position + 8;
 
+        // Attack left
         if (parseInt((forward - 1) / 8) == parseInt(forward / 8))
             attacks.push(forward - 1);
 
+        // Attack Right
         if (parseInt((forward + 1) / 8) == parseInt(forward / 8))
             attacks.push(forward + 1);
 
@@ -282,6 +299,7 @@ class Pawn extends Piece {
     }
 }
 
+// Rook subclass of Piece
 class Rook extends Piece {
     constructor(position, color) {
         super(ROOK, position, color);
@@ -359,6 +377,7 @@ class Rook extends Piece {
     }
 }
 
+// Bishop subclass of Piece
 class Bishop extends Piece {
     constructor(position, color) {
         super(BISHOP, position, color);
@@ -453,6 +472,7 @@ class Bishop extends Piece {
     }
 }
 
+// Knight subclass of Piece
 class Knight extends Piece {
     constructor(position, color) {
         super(KNIGHT, position, color);
@@ -592,6 +612,7 @@ class Knight extends Piece {
     }
 }
 
+// Queen subclass of Piece
 class Queen extends Piece {
     constructor(position, color) {
         super(QUEEN, position, color);
@@ -736,6 +757,7 @@ class Queen extends Piece {
     }
 }
 
+// King subclass of Piece
 class King extends Piece {
     constructor(position, color) {
         super(KING, position, color);
@@ -837,6 +859,7 @@ class King extends Piece {
     }
 }
 
+// Finds the correct piece object on the board using the wrapper div
 function getPieceFromWrapper(wrapper) {
     for (var i = 0; i < 64; i++) {
         if (gameboard[i] instanceof Piece) {
@@ -847,6 +870,7 @@ function getPieceFromWrapper(wrapper) {
     }
 }
 
+// Get a map of all squares white can attack
 function generateWhiteAttackMap() {
     var attackedSquares = [64];
     for (var i = 0; i < 64; i++) {
@@ -866,6 +890,7 @@ function generateWhiteAttackMap() {
     return attackedSquares;
 }
 
+// Get a map of all squares black can attack
 function generateBlackAttackMap() {
     var attackedSquares = [64];
     for (var i = 0; i < 64; i++) {
@@ -883,6 +908,7 @@ function generateBlackAttackMap() {
     return attackedSquares;
 }
 
+// Return slider attacks going up, down, left, and right
 function getSliderPerpindicularAttacks(piece, attacks) {
     // Up
     for (var pos = piece.position - 8; pos >= 0; pos -= 8) {
@@ -937,6 +963,7 @@ function getSliderPerpindicularAttacks(piece, attacks) {
     }
 }
 
+// Get slider attacks going diagonally
 function getSliderDiagonalAttacks(piece, attacks) {
     // Up + Right
     for (var pos = piece.position - 7; pos >= 0; pos -= 7) {
@@ -1011,6 +1038,7 @@ function getSliderDiagonalAttacks(piece, attacks) {
     }
 }
 
+// Remove any squares that are under atack
 function removeAttackedSquares(piece, moves) {
     if (piece.color == 'white') {
         for (var i = 0; i < moves.length; i++) {
@@ -1029,6 +1057,7 @@ function removeAttackedSquares(piece, moves) {
     }
 }
 
+// Displays the white attacks from dev panel
 function showWhiteAttacks() {
     for (var i = 0; i < 64; i++) {
         if (ATTACK_WHITE[i] == 1) {
@@ -1039,6 +1068,7 @@ function showWhiteAttacks() {
     }
 }
 
+// Displays the black attacks from dev panel
 function showBlackAttacks() {
     for (var i = 0; i < 64; i++) {
         if (ATTACK_BLACK[i] == 1) {
@@ -1049,6 +1079,7 @@ function showBlackAttacks() {
     }
 }
 
+// Filter out moves when checked by at least one piece
 function checkedByOneFilter(piece, moves) {
     let attackerPos = -1;
 
@@ -1085,6 +1116,7 @@ function checkedByOneFilter(piece, moves) {
     }
 }
 
+// Get a map of where the piece can move to protect the king
 function generatePushMap(defender, attacker, moves) {
 
     pushMoves = [];

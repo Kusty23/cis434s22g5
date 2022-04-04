@@ -20,6 +20,7 @@ const CELL_SIZE = 60;
 let margin_top;
 let margin_left;
 
+// Sets the status in the dev panel
 function setStatus(message) {
     if (document.body.childElementCount > 1)
         document.body.removeChild(document.body.lastChild);
@@ -27,12 +28,14 @@ function setStatus(message) {
     document.body.appendChild(document.createTextNode(message));
 }
 
+// Container class for each board square
 class Cell {
     constructor(id, isWhite) {
         this.id = id;
         this.isWhite = isWhite;
         this.highlighted = false;
 
+        // Create cell div element
         this.div = document.createElement('div');
         board.appendChild(this.div);
         this.div.className = 'cell';
@@ -47,6 +50,7 @@ class Cell {
         }
     }
 
+    // Slightly lightens the color of cell
     select() {
         if (this.highlighted)
             return;
@@ -59,6 +63,7 @@ class Cell {
         this.div.style.backgroundColor = (this.isWhite) ? CELL_LIGHT : CELL_DARK;
     }
 
+    // Highlights cell in yellow
     highlight() {
         this.highlighted = true;
         this.div.style.backgroundColor = (this.isWhite) ? MOVE_LIGHT : MOVE_DARK;
@@ -70,10 +75,12 @@ class Cell {
     }
 }
 
+// Generates the squares of the chess board
 function genBoard() {
     var board = document.getElementById('board');
     var white = true;
 
+    // Get the true margins from the browser
     margin_top = parseInt(board.getBoundingClientRect().top);
     margin_left = parseInt(board.getBoundingClientRect().left);
 
@@ -91,6 +98,7 @@ function genBoard() {
     }
 }
 
+// Adds numerical id in corner of each cell
 function addCellIds() {
     for (var i = 0; i < 64; i++) {
         var id = document.createTextNode(i);
@@ -110,6 +118,7 @@ function addCellIds() {
     }
 }
 
+// Place the pieces in starting formation of a standard game of chess
 function genPieces() {
     // Black Pieces
     new Rook(0, 'black');
@@ -130,7 +139,7 @@ function genPieces() {
     new Pawn(14, 'black');
     new Pawn(15, 'black');
 
-    // Black Pieces
+    // White Pieces
     new Pawn(48, 'white');
     new Pawn(49, 'white');
     new Pawn(50, 'white');
@@ -156,6 +165,7 @@ function genPieces() {
     }
 }
 
+// Gets the cell id that contains point (x,y) of screen
 function screenToGamePos(x, y) {
     let gameX = Math.floor((x - margin_left) / CELL_SIZE);
     let gameY = Math.floor((y - margin_top) / CELL_SIZE);

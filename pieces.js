@@ -108,8 +108,7 @@ class Piece {
         // Animate it if the computer is moving to help player see the move made
         if (computer) {
             $('#' + this.id).animate({ left: left + 'px', top: top + 'px' });
-        }
-        else {
+        } else {
             this.wrapper.style.left = left + 'px';
             this.wrapper.style.top = top + 'px';
         }
@@ -124,7 +123,7 @@ class Piece {
 
             whiteTurn = !whiteTurn;
             setStatus(whiteTurn);
-            playTurn();
+            setTimeout(playTurn, 200);
         }
 
         return this.position != oldPosition;
@@ -252,12 +251,19 @@ class Pawn extends Piece {
         let forward = (this.color == 'white') ? this.position - 8 : this.position + 8;
 
         // Attack left
-        if (parseInt((forward - 1) / 8) == parseInt(forward / 8))
-            attacks.push(forward - 1);
+        if (parseInt((forward - 1) / 8) == parseInt(forward / 8)) {
+            if (forward - 1 >= 0 && forward - 1 < 64) {
+                attacks.push(forward - 1);
+            }
+        }
+
 
         // Attack Right
-        if (parseInt((forward + 1) / 8) == parseInt(forward / 8))
-            attacks.push(forward + 1);
+        if (parseInt((forward + 1) / 8) == parseInt(forward / 8)) {
+            if (forward - 1 >= 0 && forward - 1 < 64) {
+                attacks.push(forward + 1);
+            }
+        }
 
         return attacks;
     }
@@ -269,11 +275,16 @@ class Pawn extends Piece {
 
         // Move forward one
         if (!(gameboard[this.position + forward] instanceof Piece)) {
-            moves.push(this.position + forward);
+            if (this.position + forward >= 0 && this.position + forward < 64) {
+                moves.push(this.position + forward);
 
-            // Move forward 2 if not yet moved
-            if (!this.hasMoved && !(gameboard[this.position + forward * 2] instanceof Piece))
-                moves.push(this.position + forward * 2);
+                // Move forward 2 if not yet moved
+                if (!this.hasMoved && !(gameboard[this.position + forward * 2] instanceof Piece)) {
+                    if (this.position + forward * 2 >= 0 && this.position + forward * 2 < 64) {
+                        moves.push(this.position + forward * 2);
+                    }
+                }
+            }
         }
 
         // Diagonal Attacks
@@ -281,13 +292,17 @@ class Pawn extends Piece {
 
         if (parseInt((f1 - 1) / 8) * 8 == parseInt(f1 / 8) * 8) {
             if (gameboard[f1 - 1] instanceof Piece && gameboard[f1 - 1].color != this.color) {
-                moves.push(f1 - 1);
+                if (f1 - 1 >= 0 && f1 - 1 < 64) {
+                    moves.push(f1 - 1);
+                }
             }
         }
 
         if (parseInt((f1 + 1) / 8) * 8 == parseInt(f1 / 8) * 8) {
             if (gameboard[f1 + 1] instanceof Piece && gameboard[f1 + 1].color != this.color) {
-                moves.push(f1 + 1);
+                if (f1 + 1 >= 0 && f1 + 1 < 64) {
+                    moves.push(f1 + 1);
+                }
             }
         }
 

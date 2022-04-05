@@ -12,7 +12,8 @@ var madeMove = false;
 
 var mode;
 
-var standardFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+var standardFEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
+//standardFEN = 'rnkq2n1/pppb1b1p/8/4r2B/8/3p4/PPPPPP1P/RN1QK1NR';
 
 // Need to move pieces back to the right position when board moves due to window change
 function onResize() {
@@ -65,7 +66,6 @@ function newGame() {
 function setupPieces(fen) {
     let pos = 0;
     for (let i=0; i<fen.length; i++) {
-        console.log(fen[i] + ' is going to ' + (pos));
         switch(fen[i]) {
             case 'r': new Rook(pos, 'black'); pos++; break;
             case 'n': new Knight(pos, 'black'); pos++; break;
@@ -81,7 +81,7 @@ function setupPieces(fen) {
             case 'K': new King(pos, 'white'); pos++; break;
             case 'P': new Pawn(pos, 'white'); pos++; break;
 
-            case '/': console.log(fen[i] + ' is a slash'); break;
+            case '/': break;
 
             default: pos += parseInt(fen[i]);
         }
@@ -223,14 +223,14 @@ function deactivateWhite() {
 
 // Sets all black pieces to active
 function activateBlack() {
-    for (var i = 0; i < whitePieces.length; i++) {
+    for (var i = 0; i < blackPieces.length; i++) {
         blackPieces[i].active = true;
     }
 }
 
 // Sets all black pieces to disactive
 function deactivateBlack() {
-    for (var i = 0; i < whitePieces.length; i++) {
+    for (var i = 0; i < blackPieces.length; i++) {
         blackPieces[i].active = false;
     }
 }

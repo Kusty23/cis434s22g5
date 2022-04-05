@@ -310,6 +310,8 @@ class Pawn extends Piece {
             moves = checkedByOneFilter(this, moves);
         }
 
+        pinnedFilter(this, moves);
+
         return moves;
     }
 }
@@ -387,6 +389,8 @@ class Rook extends Piece {
         if (inCheck == this.color) {
             moves = checkedByOneFilter(this, moves);
         }
+
+        pinnedFilter(this, moves);
 
         return moves;
     }
@@ -482,6 +486,8 @@ class Bishop extends Piece {
         if (inCheck == this.color) {
             moves = checkedByOneFilter(this, moves);
         }
+
+        pinnedFilter(this, moves);
 
         return moves;
     }
@@ -767,6 +773,8 @@ class Queen extends Piece {
         if (inCheck == this.color) {
             moves = checkedByOneFilter(this, moves);
         }
+
+        pinnedFilter(this, moves);
 
         return moves;
     }
@@ -1213,4 +1221,133 @@ function generatePushMap(defender, attacker, moves) {
     }
 
     return validMoves;
+}
+
+function pinnedFilter(piece, moves) {
+    let opponentPieces = (piece.color == 'white') ? blackPieces : whitePieces;
+
+    // Check Perpindicular Pins
+    if (piece instanceof Rook || piece instanceof Queen || piece instanceof Pawn) {
+        for (let i = 0; i < opponentPieces.length; i++) {
+            let opponentPiece = opponentPieces[i];
+
+            if (opponentPiece instanceof Rook || opponentPiece instanceof Queen) {
+                let opponentMoves = [];
+                getSliderPerpindicularAttacks(opponentPiece, opponentMoves);
+
+                let kingMoves = [];
+
+                let king = (piece.color == 'white') ? WHITE_KING : BLACK_KING;
+                getSliderPerpindicularAttacks(king, kingMoves);
+
+                if (opponentMoves.includes(piece.position) && kingMoves.includes(piece.position)) {
+                    let pinnedRay = [];
+
+                    // If pinned ray is horizontal
+                    if (parseInt(king.position / 8) == parseInt(opponentPiece.position / 8)) {
+                        let left;
+                        let right;
+
+                        if (king.position < opponentPiece.position) {
+                            left = king.position + 1;
+                            right = opponentPiece.position;
+                        } else {
+                            left = opponentPiece.position;
+                            right = king.position - 1;
+                        }
+
+                        for (let j = left; j <= right; j++) {
+                            pinnedRay.push(j);
+                        }
+                    }
+                    // If pinned ray is vertical
+                    else {
+                        let top;
+                        let bottom;
+
+                        if (king.position < opponentPiece.position) {
+                            top = king.position + 8;
+                            bottom = opponentPiece.position;
+                        } else {
+                            top = opponentPiece.position;
+                            bottom = king.position - 8;
+                        }
+
+                        for (let j = top; j <= bottom; j += 8) {
+                            pinnedRay.push(j);
+                        }
+                    }
+
+                    for (let j = 0; j < moves.length;) {
+                        if (!pinnedRay.includes(moves[j])) {
+                            moves.splice(j, 1);
+                        } else {
+                            j++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Check diagonal pins
+    if (piece instanceof Bishop || piece instanceof Queen || piece instanceof Pawn) {
+        for (let i = 0; i < opponentPieces.length; i++) {
+            let opponentPiece = opponentPieces[i];
+
+            if (opponentPiece instanceof Bishop || opponentPiece instanceof Queen) {
+                let opponentMoves = [];
+                getSliderDiagonalAttacks(opponentPiece, opponentMoves);
+
+                let kingMoves = [];
+
+                let king = (piece.color == 'white') ? WHITE_KING : BLACK_KING;
+                getSliderDiagonalAttacks(king, kingMoves);
+
+                if (opponentMoves.includes(piece.position) && kingMoves.includes(piece.position)) {
+                    let pinnedRay = [];
+
+                    // If ray goes left from king
+                    if (king.position % 8 > opponentPiece.position % 8) {
+                        // If ray goes up left from king
+                        if (king.position > opponentPiece.position) {
+                            for (let j=king.position; j>=opponentPiece.position; j-=9) {
+                                pinnedRay.push(j);
+                            }
+                        }
+                        // If ray goes down left from king
+                        else {
+                            for (let j=king.position; j<=opponentPiece.position; j+=7) {
+                                pinnedRay.push(j);
+                            }
+                        }
+                    }
+                    // If ray goes right from king
+                    else {
+                        // If ray goes up right from king
+                        if (king.position > opponentPiece.position) {
+                            for (let j=king.position; j>=opponentPiece.position; j-=7) {
+                                pinnedRay.push(j);
+                            }
+                        }
+                        // If ray goes down right from king
+                        else {
+                            for (let j=king.position; j<=opponentPiece.position; j+=9) {
+                                pinnedRay.push(j);
+                            }
+                        }
+                    }
+
+                    for (let j = 0; j < moves.length;) {
+                        if (!pinnedRay.includes(moves[j])) {
+                            moves.splice(j, 1);
+                        } else {
+                            j++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

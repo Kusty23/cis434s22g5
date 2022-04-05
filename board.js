@@ -78,7 +78,7 @@ class Cell {
 // Generates the squares of the chess board
 function genBoard() {
     var board = document.getElementById('board');
-    var white = true;
+    var white = false;
 
     // Get the true margins from the browser
     margin_top = parseInt(board.getBoundingClientRect().top);

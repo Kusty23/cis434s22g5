@@ -118,53 +118,6 @@ function addCellIds() {
     }
 }
 
-// Place the pieces in starting formation of a standard game of chess
-function genPieces() {
-    // Black Pieces
-    new Rook(0, 'black');
-    new Knight(1, 'black');
-    new Bishop(2, 'black');
-    new Queen(3, 'black');
-    new King(4, 'black');
-    new Bishop(5, 'black');
-    new Knight(6, 'black');
-    new Rook(7, 'black');
-
-    new Pawn(8, 'black');
-    new Pawn(9, 'black');
-    new Pawn(10, 'black');
-    new Pawn(11, 'black');
-    new Pawn(12, 'black');
-    new Pawn(13, 'black');
-    new Pawn(14, 'black');
-    new Pawn(15, 'black');
-
-    // White Pieces
-    new Pawn(48, 'white');
-    new Pawn(49, 'white');
-    new Pawn(50, 'white');
-    new Pawn(51, 'white');
-    new Pawn(52, 'white');
-    new Pawn(53, 'white');
-    new Pawn(54, 'white');
-    new Pawn(55, 'white');
-
-    new Rook(56, 'white');
-    new Knight(57, 'white');
-    new Bishop(58, 'white');
-    new Queen(59, 'white');
-    new King(60, 'white');
-    new Bishop(61, 'white');
-    new Knight(62, 'white');
-    new Rook(63, 'white');
-
-    // Create the HTML elements for each piece
-    for (var i = 0; i < 64; i++) {
-        if (gameboard[i] instanceof Piece)
-            gameboard[i].create();
-    }
-}
-
 // Gets the cell id that contains point (x,y) of screen
 function screenToGamePos(x, y) {
     let gameX = Math.floor((x - margin_left) / CELL_SIZE);

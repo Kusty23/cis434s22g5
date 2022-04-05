@@ -12,6 +12,8 @@ var madeMove = false;
 
 var mode;
 
+var standardFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+
 // Need to move pieces back to the right position when board moves due to window change
 function onResize() {
     for (var i = 0; i < 64; i++) {
@@ -50,7 +52,7 @@ function newGame() {
 
 
     genBoard();
-    genPieces();
+    setupPieces(standardFEN);
     addCellIds();
 
     setStatus('running');
@@ -58,6 +60,38 @@ function newGame() {
     // Kicks off the first turn. playTurn() recursively calls itself so
     // we don't need to continue this execution thread
     playTurn()
+}
+
+function setupPieces(fen) {
+    let pos = 0;
+    for (let i=0; i<fen.length; i++) {
+        console.log(fen[i] + ' is going to ' + (pos));
+        switch(fen[i]) {
+            case 'r': new Rook(pos, 'black'); pos++; break;
+            case 'n': new Knight(pos, 'black'); pos++; break;
+            case 'b': new Bishop(pos, 'black'); pos++; break;
+            case 'q': new Queen(pos, 'black'); pos++; break;
+            case 'k': new King(pos, 'black'); pos++; break;
+            case 'p': new Pawn(pos, 'black'); pos++; break;
+
+            case 'R': new Rook(pos, 'white'); pos++; break;
+            case 'N': new Knight(pos, 'white'); pos++; break;
+            case 'B': new Bishop(pos, 'white'); pos++; break;
+            case 'Q': new Queen(pos, 'white'); pos++; break;
+            case 'K': new King(pos, 'white'); pos++; break;
+            case 'P': new Pawn(pos, 'white'); pos++; break;
+
+            case '/': console.log(fen[i] + ' is a slash'); break;
+
+            default: pos += parseInt(fen[i]);
+        }
+    }
+
+    // Create the HTML elements for each piece
+    for (var i = 0; i < 64; i++) {
+        if (gameboard[i] instanceof Piece)
+            gameboard[i].create();
+    }
 }
 
 // Starts a new turn, called when a piece is moved successfully

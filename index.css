@@ -12,6 +12,7 @@ body {
 
 .main-title {
     margin-top: 100px;
+    margin-bottom: 40px;
     background: #567b98;
     padding: 40px 80px;
     font-size: 60px;
@@ -35,15 +36,27 @@ body {
     background: #7096b4;
 }
 
-.menu-checkbox {
-    margin-top: 20px;
-    padding: 20px;
+.settings-div {
+    margin: 20px 0px;
+    padding: 20px 80px;
     color: white;
     font-size: 30px;
     font-family: sans-serif;
     font-variant: small-caps;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    background: #567b98;
+}
+
+.radio {
+    display: flex;
+    align-items: center;
+}
+
+.radio input[type="radio"] {
+    transform: scale(2);
+    margin-right: 20px;
 }
 
 .checkbox {

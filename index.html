@@ -16,9 +16,19 @@
 
         <form method="GET" action="./board.html">
             <!-- PVP or PVC -->
-            <div class="menu-checkbox">
-                <input type="checkbox" class="checkbox" name="pvc">
-                <label for="vehicle1"> Play against computer</label>
+            <div class="settings-div">
+                <div class="radio">
+                    <input type="radio" name="player-mode" value="pvp">
+                    <label for="player-mode-pvp">PvP</label>
+                </div>
+                <div class="radio">
+                    <input type="radio" name="player-mode" checked="checked" value="pvc">
+                    <label for="player-mode-pvp">PvC</label>
+                </div>
+                <div class="radio">
+                    <input type="radio" name="player-mode" value="cvc">
+                    <label for="player-mode-pvp">CvC</label>
+                </div>
             </div>
 
 

@@ -10,7 +10,7 @@ var checkmate = false;
 var whiteTurn = true;
 var madeMove = false;
 
-var isPvC;
+var mode;
 
 // Need to move pieces back to the right position when board moves due to window change
 function onResize() {
@@ -46,13 +46,7 @@ function getParameterByName(name) {
 // Starts a new game of chess
 function newGame() {
     // If Player v Computer
-    if (getParameterByName('pvc')) {
-        isPvC = true;
-    }
-    // If Player v Player
-    else {
-        isPvC = false;
-    }
+    mode = getParameterByName('player-mode');
 
 
     genBoard();
@@ -78,6 +72,22 @@ function playTurn() {
         }
 
         activateWhite();
+
+        if (mode == 'cvc') {
+            let moved = false;
+            while (!moved) {
+                let piece = whitePieces[parseInt(Math.random() * whitePieces.length)];
+
+                let moves = piece.getValidMoves();
+                if (piece.alive && moves.length > 0) {
+                    let move = moves[parseInt(Math.random() * moves.length)];
+                    console.log(piece);
+                    console.log('was moved by white to ' + move);
+                    piece.updatePosition(move, true);
+                    moved = true;
+                }
+            }
+        }
     }
     // Black Turn
     else {
@@ -90,7 +100,7 @@ function playTurn() {
 
         activateBlack();
 
-        if (isPvC) {
+        if (mode == 'pvc' || mode == 'cvc') {
             let moved = false;
             while (!moved) {
                 let piece = blackPieces[parseInt(Math.random() * blackPieces.length)];
@@ -98,6 +108,8 @@ function playTurn() {
                 let moves = piece.getValidMoves();
                 if (piece.alive && moves.length > 0) {
                     let move = moves[parseInt(Math.random() * moves.length)];
+                    console.log(piece);
+                    console.log('was moved by black to ' + move);
                     piece.updatePosition(move, true);
                     moved = true;
                 }

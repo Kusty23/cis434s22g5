@@ -62,10 +62,10 @@ function startTimer() {
                 if (p1Sec === 60) {
                     p1Time.minutes = p1Time.minutes - 1;
                 }
-				        p1Sec = p1Sec - 1;
+		p1Sec = p1Sec - 1;
                 timeWarning(currentPlayer, p1Time.minutes, p1Sec);
                 document.getElementById("sec1").childNodes[0].nodeValue = padZero(p1Sec);
-				        document.getElementById("min1").childNodes[0].nodeValue = p1Time.minutes;
+		document.getElementById("min1").childNodes[0].nodeValue = p1Time.minutes;
                 if (p1Sec === 0) {
                     //If minutes and seconds are zero stop timer with the clearInterval method
                     if (p1Sec === 0 && p1Time.minutes === 0) {
@@ -73,8 +73,8 @@ function startTimer() {
                         clearInterval(timerId);
                         playing = false;
                     } else {
-						            p1Sec = 60;
-					          }
+			p1Sec = 60;
+		    }
                 }	
             }
         } else {
@@ -84,10 +84,10 @@ function startTimer() {
                 if (p2Sec === 60) {
                     p2Time.minutes = p2Time.minutes - 1;
                 }
-				        p2Sec = p2Sec - 1;
+		p2Sec = p2Sec - 1;
                 timeWarning(currentPlayer, p2Time.minutes, p2Sec);
                 document.getElementById("sec2").childNodes[0].nodeValue = padZero(p2Sec);
-				        document.getElementById("min2").childNodes[0].nodeValue = p2Time.minutes;
+		document.getElementById("min2").childNodes[0].nodeValue = p2Time.minutes;
                 if (p2Sec === 0) {
                     //If minutes and seconds are zero stop timer with the clearInterval method
                     if (p2Sec === 0 && p2Time.minutes === 0) {
@@ -95,8 +95,8 @@ function startTimer() {
                         clearInterval(timerId);
                         playing = false;
                     } else {
-						            p2Sec = 60;
-					          }
+			p2Sec = 60;
+		    }
                 }
             }
         }

@@ -14,6 +14,11 @@ class Timer {
   }
 }
 
+
+
+console.log(document.getElementById("min1").textContent);
+
+
 // Create an instance of the timer for each player
 var p1Time = new Timer("min1", document.getElementById("min1").textContent);
 var p2Time = new Timer("min2", document.getElementById("min2").textContent);

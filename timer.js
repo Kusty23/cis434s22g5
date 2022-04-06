@@ -10,18 +10,18 @@ class Timer {
   }
   
   getMinutes(timeId) {
-    return document.getElementById(timeId).nodeValue;
+    return document.getElementById(timeId).childNodes[0].nodeValue;
   }
 }
 
 
 
-console.log(document.getElementById("min1").nodeValue);
+console.log(document.getElementById("min1").childNodes[0].nodeValue);
 
 
 // Create an instance of the timer for each player
-var p1Time = new Timer("min1", document.getElementById("min1").nodeValue);
-var p2Time = new Timer("min2", document.getElementById("min2").nodeValue);
+var p1Time = new Timer("min1", document.getElementById("min1").childNodes[0].nodeValue);
+var p2Time = new Timer("min2", document.getElementById("min2").childNodes[0].nodeValue);
 
 //Add a leading zero to numbers less than 10
 const padZero = function(number) {
@@ -69,8 +69,8 @@ const startTimer = function() {
                 }
                 p1Sec = p1Sec - 1;
                 timeWarning(currentPlayer, p1Time.minutes, p1Sec);
-                document.getElementById("sec1").nodeValue = padZero(p1Sec);
-                document.getElementById("min1").nodeValue = padZero(p1Time.minutes);
+                document.getElementById("sec1").childNodes[0].nodeValue = padZero(p1Sec);
+                document.getElementById("min1").childNodes[0].nodeValue = padZero(p1Time.minutes);
                 if (p1Sec === 0) {
                     //If minutes and seconds are zero stop timer with the clearInterval method
                     if (p1Sec === 0 && p1Time.minutes === 0) {
@@ -90,8 +90,8 @@ const startTimer = function() {
                 }
                 p2Sec = p2Sec - 1;
                 timeWarning(currentPlayer, p2Time.minutes, p2Sec);
-                document.getElementById("sec2").nodeValue = padZero(p2Sec);
-                document.getElementById("min2").nodeValue = padZero(p2Time.minutes);
+                document.getElementById("sec2").childNodes[0].nodeValue = padZero(p2Sec);
+                document.getElementById("min2").childNodes[0].nodeValue = padZero(p2Time.minutes);
                 if (p2Sec === 0) {
                     //If minutes and seconds are zero stop timer with the clearInterval method
                     if (p2Sec === 0 && p2Time.minutes === 0) {

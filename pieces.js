@@ -164,6 +164,8 @@ class Piece {
                 // Set mouse listener methods
                 document.onmousemove = drag;
                 document.onmouseup = stopDragging;
+                piece.onclick = startTimer();
+                
 
                 // Highlight all valid moves for this piece
                 piece.highlightValidMoves();

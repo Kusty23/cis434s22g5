@@ -10,7 +10,7 @@
     flex-direction: column;
 }
 
-.timer__tile {
+.timer-tile {
     width: 100%;
     height: 150px;
     display: flex;
@@ -33,7 +33,7 @@
     background-color: #2D2C2C;
 }
 
-.timer__digits {
+.timer-digits {
     font-size: 5rem;
     font-weight: bold;
     padding: 10px;

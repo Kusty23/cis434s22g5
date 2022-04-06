@@ -164,7 +164,6 @@ class Piece {
                 // Set mouse listener methods
                 document.onmousemove = drag;
                 document.onmouseup = stopDragging;
-                piece.onmousedown = startTimer();
                 
                 // Highlight all valid moves for this piece
                 piece.highlightValidMoves();
@@ -207,7 +206,6 @@ class Piece {
 
             // Stop using onmousemove()
             this.onmousemove = null;
-            piece.onmouseup = swapPlayer();
         }
 
     }

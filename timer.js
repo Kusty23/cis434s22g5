@@ -15,8 +15,8 @@ class Timer {
 }
 
 // Create an instance of the timer for each player
-var p1Time = new Timer("min1", document.getElementById("min1").textContext);
-var p2Time = new Timer("min2", document.getElementById("min2").textContext);
+var p1Time = new Timer("min1", document.getElementById("min1").textContent);
+var p2Time = new Timer("min2", document.getElementById("min2").textContent);
 
 //Add a leading zero to numbers less than 10
 const padZero = function(number) {

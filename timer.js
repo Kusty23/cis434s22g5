@@ -1,6 +1,6 @@
 var playing = false;
 var currentPlayer = 1; 
-const timerPanel = document.getElementsByClassName("timer");
+const timerPanel = document.querySelector(".timer");
 
 //Create a class for the timer
 class Timer {
@@ -19,7 +19,7 @@ var p1Time = new Timer("min1", document.getElementById("min1").childNodes[0].nod
 var p2Time = new Timer("min2", document.getElementById("min2").childNodes[0].nodeValue);
 
 //Add a leading zero to numbers less than 10
-const padZero = function(number) {
+function padZero(number) {
   if (number < 10) {
     return "0" + number;
   } else {
@@ -28,7 +28,7 @@ const padZero = function(number) {
 }
 
 //Swap player's timer after a move (player 1 (White) = 1, player 2 (Black) = 2)
-const swapPlayer = function() {
+function swapPlayer() {
   if (!playing) {
     return;
   }
@@ -37,19 +37,19 @@ const swapPlayer = function() {
 }
 
 //Warn player if time drops below one minute
-const timeWarning = function(player, min, sec) {
+function timeWarning(player, min, sec) {
     //Change the numbers to red during the last 60 seconds
     if (min < 1 && sec <= 59) {
         if (player === 1) {
-            document.querySelector(".player-1 .player__digits").style.color = "#CC0000";
+            document.querySelector(".player1 .timer-digits").style.color = "#CC0000";
         } else {
-            document.querySelector(".player-2 .player__digits").style.color = "#CC0000";
+            document.querySelector(".player2 .timer-digits").style.color = "#CC0000";
         }
     }
 }
 
 //Start timer countdown to zero
-const startTimer = function() {
+function startTimer() {
     playing = true;
     var p1Sec = 60;
     var p2Sec = 60;
@@ -62,19 +62,20 @@ const startTimer = function() {
                 if (p1Sec === 60) {
                     p1Time.minutes = p1Time.minutes - 1;
                 }
-                p1Sec = p1Sec - 1;
+				        p1Sec = p1Sec - 1;
                 timeWarning(currentPlayer, p1Time.minutes, p1Sec);
                 document.getElementById("sec1").childNodes[0].nodeValue = padZero(p1Sec);
-                document.getElementById("min1").childNodes[0].nodeValue = padZero(p1Time.minutes);
+				        document.getElementById("min1").childNodes[0].nodeValue = p1Time.minutes;
                 if (p1Sec === 0) {
                     //If minutes and seconds are zero stop timer with the clearInterval method
                     if (p1Sec === 0 && p1Time.minutes === 0) {
                         //Stop timer
                         clearInterval(timerId);
                         playing = false;
-                    }
-                    p1Sec = 60;
-                }
+                    } else {
+						            p1Sec = 60;
+					          }
+                }	
             }
         } else {
         //Player 2
@@ -83,18 +84,19 @@ const startTimer = function() {
                 if (p2Sec === 60) {
                     p2Time.minutes = p2Time.minutes - 1;
                 }
-                p2Sec = p2Sec - 1;
+				        p2Sec = p2Sec - 1;
                 timeWarning(currentPlayer, p2Time.minutes, p2Sec);
                 document.getElementById("sec2").childNodes[0].nodeValue = padZero(p2Sec);
-                document.getElementById("min2").childNodes[0].nodeValue = padZero(p2Time.minutes);
+				        document.getElementById("min2").childNodes[0].nodeValue = p2Time.minutes;
                 if (p2Sec === 0) {
                     //If minutes and seconds are zero stop timer with the clearInterval method
                     if (p2Sec === 0 && p2Time.minutes === 0) {
                         // Stop timer
                         clearInterval(timerId);
                         playing = false;
-                    }
-                    p2Sec = 60;
+                    } else {
+						            p2Sec = 60;
+					          }
                 }
             }
         }

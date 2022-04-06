@@ -1,6 +1,6 @@
 var playing = false;
 var currentPlayer = 1; 
-//const timerPanel = document.querySelector(".timer");
+const timerPanel = document.querySelector(".timer");
 
 //Create a class for the timer
 class Timer {
@@ -104,4 +104,4 @@ function startTimer() {
 }
 
 //Listen for a mouse click or tap on the screen to toggle between timers
-//timerPanel.addEventListener("click", swapPlayer);
+timerPanel.addEventListener("click", swapPlayer);

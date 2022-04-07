@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 
-.timer {
+#timer {
     margin: 1em 0 5px 0;
     display: flex;
     top: 16%;
@@ -13,8 +13,9 @@
 
 .timer-tile {
     display: flex;
-    margin: 0 auto;
-    max-width: 400px;
+    margin: 20px;
+
+    width: 100px;
     border-radius: 8px;
     align-items: center;
     justify-content: center;

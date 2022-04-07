@@ -33,7 +33,7 @@
 
             <div class="settings-div" id="blitz">
                 <div class="checkbox">
-                    <input type="checkbox" name="doBlitz">
+                    <input type="checkbox"id="doBlitz" name="doBlitz" value="doBlitz" checked='false'>
                     <label for="doBlitz">Blitz Mode</label>
                 </div>
                 <div class="radio">
@@ -41,7 +41,7 @@
                     <label for="blitz-time">5 min</label>
                 </div>
                 <div class="radio">
-                    <input type="radio" name="blitz-time" value="10">
+                    <input type="radio" name="blitz-time" checked="checked" value="10">
                     <label for="blitz-time">10 min</label>
                 </div>
                 <div class="radio">
@@ -49,7 +49,6 @@
                     <label for="blitz-time">30 min</label>
                 </div>
             </div>
-
 
             <!-- Play Game Button -->
             <input class="menu-button" type="submit" value="Play Game">
@@ -59,7 +58,10 @@
 
     <p class="subtitle">CIS 434 Final Project Group 5 - Ryan Kustaborder, John Langel, and Max Kulnane</p>
 
+    <!-- Script for blitz mode menu showing or not -->
     <script>
+        document.getElementById('doBlitz').checked = false;
+
         document.getElementById('pvp').addEventListener('change', function() {
             document.getElementById('blitz').style.display = 'flex';
         });

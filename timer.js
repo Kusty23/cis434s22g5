@@ -1,6 +1,6 @@
 var playing = false;
-var currentPlayer = 1; 
-const timerPanel = document.querySelector(".timer");
+var currentPlayer = 1;
+const timerPanel = document.getElementById('timer');
 
 //Create a class for the timer
 class Timer {
@@ -8,7 +8,7 @@ class Timer {
     this.player = player;
     this.minutes = minutes;
   }
-  
+
   getMinutes(timeId) {
     return document.getElementById(timeId).childNodes[0].nodeValue;
   }
@@ -33,7 +33,7 @@ function swapPlayer() {
     return;
   }
   //Toggle the current player
-  currentPlayer = currentPlayer === 1 ? 2 : 1; 
+  currentPlayer = currentPlayer === 1 ? 2 : 1;
 }
 
 //Warn player if time drops below one minute
@@ -75,7 +75,7 @@ function startTimer() {
                     } else {
 			p1Sec = 60;
 		    }
-                }	
+                }
             }
         } else {
         //Player 2

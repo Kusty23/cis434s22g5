@@ -11,6 +11,7 @@ var whiteTurn = true;
 var madeMove = false;
 
 var mode;
+let doBlitz;
 
 var standardFEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 //standardFEN = 'rnkq2n1/pppb1b1p/8/4r2B/8/3p4/PPPPPP1P/RN1QK1NR';
@@ -50,6 +51,14 @@ function getParameterByName(name) {
 function newGame() {
     // If Player v Computer
     mode = getParameterByName('player-mode');
+    doBlitz = getParameterByName('doBlitz');
+
+    if (doBlitz) {
+        setUpBlitz();
+    }
+    else {
+        document.getElementById('timer').style.display = 'none';
+    }
 
 
     genBoard();
@@ -63,6 +72,13 @@ function newGame() {
 
     // Start the timer
     startTimer();
+}
+
+function setUpBlitz() {
+    let blitzTime = getParameterByName('blitz-time');
+
+    document.getElementById('min1').innerHTML = blitzTime;
+    document.getElementById('min2').innerHTML = blitzTime;
 }
 
 function setupPieces(fen) {

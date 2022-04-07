@@ -16,6 +16,7 @@ body {
     background: #567b98;
     padding: 40px 80px;
     font-size: 60px;
+    text-align: center;
     font-family: sans-serif;
     color: white;
 }
@@ -49,9 +50,14 @@ body {
     background: #567b98;
 }
 
+#blitz {
+    display: none;
+}
+
 .radio {
     display: flex;
     align-items: center;
+    margin-right: 20px;
 }
 
 .radio input[type="radio"] {
@@ -60,9 +66,13 @@ body {
 }
 
 .checkbox {
+    margin-right: 30px;
+}
+
+.checkbox input {
     transform: scale(3);
     margin-left: 20px;
-    margin-right: 20px;
+    margin-right: 10px;
 }
 
 .subtitle {

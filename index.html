@@ -18,16 +18,35 @@
             <!-- PVP or PVC -->
             <div class="settings-div">
                 <div class="radio">
-                    <input type="radio" name="player-mode" value="pvp">
+                    <input id="pvp" type="radio" name="player-mode" value="pvp">
                     <label for="player-mode-pvp">PvP</label>
                 </div>
                 <div class="radio">
-                    <input type="radio" name="player-mode" checked="checked" value="pvc">
+                    <input id="pvc" type="radio" name="player-mode" checked="checked" value="pvc">
                     <label for="player-mode-pvp">PvC</label>
                 </div>
                 <div class="radio">
-                    <input type="radio" name="player-mode" value="cvc">
+                    <input id="cvc" type="radio" name="player-mode" value="cvc">
                     <label for="player-mode-pvp">CvC</label>
+                </div>
+            </div>
+
+            <div class="settings-div" id="blitz">
+                <div class="checkbox">
+                    <input type="checkbox" name="doBlitz">
+                    <label for="doBlitz">Blitz Mode</label>
+                </div>
+                <div class="radio">
+                    <input type="radio" name="blitz-time" value="5">
+                    <label for="blitz-time">5 min</label>
+                </div>
+                <div class="radio">
+                    <input type="radio" name="blitz-time" value="10">
+                    <label for="blitz-time">10 min</label>
+                </div>
+                <div class="radio">
+                    <input type="radio" name="blitz-time" value="30">
+                    <label for="blitz-time">30 min</label>
                 </div>
             </div>
 
@@ -37,7 +56,22 @@
         </form>
 
     </div>
+
     <p class="subtitle">CIS 434 Final Project Group 5 - Ryan Kustaborder, John Langel, and Max Kulnane</p>
+
+    <script>
+        document.getElementById('pvp').addEventListener('change', function() {
+            document.getElementById('blitz').style.display = 'flex';
+        });
+
+        document.getElementById('pvc').addEventListener('change', function() {
+            document.getElementById('blitz').style.display = 'none';
+        });
+
+        document.getElementById('cvc').addEventListener('change', function() {
+            document.getElementById('blitz').style.display = 'none';
+        });
+    </script>
 </body>
 
 </html>

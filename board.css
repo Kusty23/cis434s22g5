@@ -35,3 +35,7 @@ body {
 #win-text {
     opacity: 0;
 }
+
+.dev {
+    display: none;
+}

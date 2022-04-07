@@ -58,32 +58,72 @@ function newGame() {
 
     setStatus('running');
 
-    // Kicks off the first turn. playTurn() recursively calls itself so
-    // we don't need to continue this execution thread
-    playTurn()
+    // Kicks off the first turn. playTurn() is called again when a piece moves
+    playTurn();
+
+    // Start the timer
+    startTimer();
 }
 
 function setupPieces(fen) {
     let pos = 0;
-    for (let i=0; i<fen.length; i++) {
-        switch(fen[i]) {
-            case 'r': new Rook(pos, 'black'); pos++; break;
-            case 'n': new Knight(pos, 'black'); pos++; break;
-            case 'b': new Bishop(pos, 'black'); pos++; break;
-            case 'q': new Queen(pos, 'black'); pos++; break;
-            case 'k': new King(pos, 'black'); pos++; break;
-            case 'p': new Pawn(pos, 'black'); pos++; break;
+    for (let i = 0; i < fen.length; i++) {
+        switch (fen[i]) {
+            case 'r':
+                new Rook(pos, 'black');
+                pos++;
+                break;
+            case 'n':
+                new Knight(pos, 'black');
+                pos++;
+                break;
+            case 'b':
+                new Bishop(pos, 'black');
+                pos++;
+                break;
+            case 'q':
+                new Queen(pos, 'black');
+                pos++;
+                break;
+            case 'k':
+                new King(pos, 'black');
+                pos++;
+                break;
+            case 'p':
+                new Pawn(pos, 'black');
+                pos++;
+                break;
 
-            case 'R': new Rook(pos, 'white'); pos++; break;
-            case 'N': new Knight(pos, 'white'); pos++; break;
-            case 'B': new Bishop(pos, 'white'); pos++; break;
-            case 'Q': new Queen(pos, 'white'); pos++; break;
-            case 'K': new King(pos, 'white'); pos++; break;
-            case 'P': new Pawn(pos, 'white'); pos++; break;
+            case 'R':
+                new Rook(pos, 'white');
+                pos++;
+                break;
+            case 'N':
+                new Knight(pos, 'white');
+                pos++;
+                break;
+            case 'B':
+                new Bishop(pos, 'white');
+                pos++;
+                break;
+            case 'Q':
+                new Queen(pos, 'white');
+                pos++;
+                break;
+            case 'K':
+                new King(pos, 'white');
+                pos++;
+                break;
+            case 'P':
+                new Pawn(pos, 'white');
+                pos++;
+                break;
 
-            case '/': break;
+            case '/':
+                break;
 
-            default: pos += parseInt(fen[i]);
+            default:
+                pos += parseInt(fen[i]);
         }
     }
 

@@ -22,10 +22,7 @@ let margin_left;
 
 // Sets the status in the dev panel
 function setStatus(message) {
-    if (document.body.childElementCount > 1)
-        document.body.removeChild(document.body.lastChild);
-
-    document.body.appendChild(document.createTextNode(message));
+    document.getElementById('status').innerHTML = message;
 }
 
 // Container class for each board square

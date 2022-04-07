@@ -18,18 +18,18 @@
 
 </head>
 
-<body onload="newGame(); startTimer()" onresize="onResize()">
+<body onload="newGame();" onresize="onResize()">
     <div id="board"></div>
     <div id="win">
         <p id="win-text">CHECKMATE!</p>
     </div>
     <div class="dev">
-        <div id="status"></div>
+        <div id="status">Status</div>
         <button onclick="showBlackAttacks()">Show Black Attacks</button>
         <button onclick="showWhiteAttacks()">Show White Attacks</button>
         <button onclick="endGame()">End Game</button>
     </div>
-    
+
     <div class="timer">
         <div class="timer-tile player2">
             <div class="timer-digits">
@@ -42,6 +42,9 @@
             </div>
         </div>
     </div>
-     <script src="timer.js"></script>
+
+    <!-- Timer script needs to be loaded after the DOM is initialized -->
+    <script src="timer.js"></script>
 </body>
+
 </html>

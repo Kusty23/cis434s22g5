@@ -124,6 +124,8 @@ class Piece {
             whiteTurn = !whiteTurn;
             setStatus(whiteTurn);
             setTimeout(playTurn, 200);
+
+            swapPlayer();
         }
 
         return this.position != oldPosition;
@@ -164,7 +166,7 @@ class Piece {
                 // Set mouse listener methods
                 document.onmousemove = drag;
                 document.onmouseup = stopDragging;
-                
+
                 // Highlight all valid moves for this piece
                 piece.highlightValidMoves();
             }

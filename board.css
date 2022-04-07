@@ -39,3 +39,47 @@ body {
 .dev {
     display: none;
 }
+
+/* Rules Sidebar */
+
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    padding: 40px 0;
+    transition: 0.5s;
+    color: #818181;
+}
+
+.sidenav > * {
+    padding: 20px;
+    color: #818181;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 46px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#rules-button {
+    position: absolute;
+    left: 3rem;
+    bottom: 3rem;
+    border-radius: 20px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background-color: black;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}

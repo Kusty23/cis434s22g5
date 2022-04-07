@@ -153,7 +153,6 @@ class Piece {
 
         var piece = this;
         var wrapper = this.wrapper;
-        var hoverCell;
 
         wrapper.onmousedown = startDragging;
 
@@ -184,24 +183,11 @@ class Piece {
             // Update Position
             wrapper.style.left = (wrapper.offsetLeft - delX) + "px";
             wrapper.style.top = (wrapper.offsetTop - delY) + "px";
-
-            // Deselect hoverCell
-            if (hoverCell)
-                hoverCell.deselect();
-
-            // Select hoverCell
-            hoverCell = cells[screenToGamePos(piece.getLeft(), piece.getTop())];
-            hoverCell.select();
         }
 
         function stopDragging(e) {
             // dehighlight any cells to reset for next piece
             piece.dehighlightValidMoves();
-
-            // Deselect hoverCell
-            if (hoverCell) {
-                hoverCell.deselect();
-            }
 
             // Try to move piece to its current location
             var changed = piece.updatePosition();

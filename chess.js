@@ -223,14 +223,45 @@ function isCheck() {
 
     if (ATTACK_BLACK[whiteKingPos] == 1) {
         setStatus('white in check');
+        check();
         inCheck = 'white';
     } else if (ATTACK_WHITE[blackKingPos] == 1) {
         setStatus('black in check');
         inCheck = 'black';
+        check();
     } else {
         setStatus('running');
         inCheck = '';
     }
+}
+
+function check(victim) {
+    let banner = document.getElementById('check');
+
+    banner.style.opacity = '100%';
+
+    // Animates the banner appearing and then fading out
+    $('#check').animate({ width: '100%' }, {
+        easing: 'swing',
+        duration: 200,
+        complete: function() {
+            $('#check-text').animate({ opacity: '100%' }, {
+                easing: 'swing',
+                duration: 500,
+                complete: function() {
+                    $('#check-text').animate({ opacity: '0' }, {
+                        easing: 'swing',
+                        duration: 200,
+                        complete: function() {
+                            $('#check').animate({ opacity: '0' });
+                            $('#check').animate({ width: '0' });
+                        }
+                    });
+                }
+            });
+
+        }
+    });
 }
 
 // Handles end game behavior

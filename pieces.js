@@ -135,6 +135,16 @@ class Piece {
     kill() {
         this.wrapper.style.visibility = 'hidden';
         this.alive = false;
+
+        // Position this within the cell
+        var posX = this.position % 8;
+        var posY = Math.floor(this.position / 8);
+
+        // Center within cell
+        var left = parseInt(cells[this.position].div.getBoundingClientRect().left) + CELL_SIZE / 2.5;
+        var top = margin_top + (posY * CELL_SIZE) + CELL_SIZE / 2.5;
+
+        explosion(left, top, 3, 10, 10);
     }
 
     // Gets the left position relative to board
@@ -1299,13 +1309,13 @@ function pinnedFilter(piece, moves) {
                     if (king.position % 8 > opponentPiece.position % 8) {
                         // If ray goes up left from king
                         if (king.position > opponentPiece.position) {
-                            for (let j=king.position; j>=opponentPiece.position; j-=9) {
+                            for (let j = king.position; j >= opponentPiece.position; j -= 9) {
                                 pinnedRay.push(j);
                             }
                         }
                         // If ray goes down left from king
                         else {
-                            for (let j=king.position; j<=opponentPiece.position; j+=7) {
+                            for (let j = king.position; j <= opponentPiece.position; j += 7) {
                                 pinnedRay.push(j);
                             }
                         }
@@ -1314,13 +1324,13 @@ function pinnedFilter(piece, moves) {
                     else {
                         // If ray goes up right from king
                         if (king.position > opponentPiece.position) {
-                            for (let j=king.position; j>=opponentPiece.position; j-=7) {
+                            for (let j = king.position; j >= opponentPiece.position; j -= 7) {
                                 pinnedRay.push(j);
                             }
                         }
                         // If ray goes down right from king
                         else {
-                            for (let j=king.position; j<=opponentPiece.position; j+=9) {
+                            for (let j = king.position; j <= opponentPiece.position; j += 9) {
                                 pinnedRay.push(j);
                             }
                         }

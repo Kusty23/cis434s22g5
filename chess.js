@@ -5,10 +5,12 @@ var cells = [];
 
 var status;
 var inCheck;
+var phantomInCheck;
 var checkmate = false;
 
 var whiteTurn = true;
 var madeMove = false;
+var firstMove = true;
 
 var mode;
 let doBlitz;
@@ -191,19 +193,30 @@ function playTurn() {
         activateBlack();
 
         if (mode == 'pvc' || mode == 'cvc') {
-            let moved = false;
-            while (!moved) {
-                let piece = blackPieces[parseInt(Math.random() * blackPieces.length)];
-
-                let moves = piece.getValidMoves();
-                if (piece.alive && moves.length > 0) {
+			let moved = false;
+			while (!moved) {
+                if (firstMove) {
+                    var moves = getAllBlackPieceMoves();
                     let move = moves[parseInt(Math.random() * moves.length)];
+                    
+                    gameboard[move[0]].updatePosition(move[1], true);
                     console.log(piece);
-                    console.log('was moved by black to ' + move);
-                    piece.updatePosition(move, true);
-                    moved = true;
+                    console.log('was moved by white to ' + move);
+                    firstMove = false;
+                } else {
+                    var bestMove = calculateBestMove();
+                    var moves = getAllBlackMoves();
+                    console.log(piecesAbleToMove);
+                    for (var i = 0; i < moves.length; i++) {
+                        if (bestMove = moves[i]) {
+                            piecesAbleToMove[i].updatePosition(bestMove, true);
+                            break;
+                        }
+                    }
                 }
-            }
+                piecesAbleToMove = [];
+                moved = true;
+			}
         }
     }
 }
@@ -337,6 +350,7 @@ function getAllWhiteMoves() {
     return moves;
 }
 
+var piecesAbleToMove = [];
 // Generates all valid moves black can make
 function getAllBlackMoves() {
     let moves = [];
@@ -347,8 +361,29 @@ function getAllBlackMoves() {
         }
         for (var j = 0; j < blackPieces[i].getValidMoves().length; j++) {
             moves.push(blackPieces[i].getValidMoves()[j]);
+            piecesAbleToMove.push(blackPieces[i]);
         }
     }
 
     return moves;
 }
+
+function getAllBlackPieceMoves() {
+    let moves = [];
+
+    for (var i = 0; i < blackPieces.length; i++) {
+        if (blackPieces[i].alive == false) {
+            continue;
+        }
+        for (var j = 0; j < blackPieces[i].getValidMoves().length; j++) {
+            moves.push([blackPieces[i].position, blackPieces[i].getValidMoves()[j]]);
+        }
+    }
+
+    console.log(moves);
+    return moves;
+}
+
+
+
+

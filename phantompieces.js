@@ -1,244 +1,78 @@
-let ATTACK_WHITE = [];
-let ATTACK_BLACK = [];
+let PHANTOM_ATTACK_WHITE = [];
+let PHANTOM_ATTACK_BLACK = [];
 
-ATTACK_WHITE.fill(1);
-ATTACK_BLACK.fill(1);
+PHANTOM_ATTACK_WHITE.fill(1);
+PHANTOM_ATTACK_BLACK.fill(1);
 
-let WHITE_KING;
-let BLACK_KING;
+let PHANTOM_WHITE_KING;
+let PHANTOM_BLACK_KING;
 
-let id = 0;
+let phantom_id = 0;
 
-// Container class for piece elements
-class Piece {
-    constructor(symbol, position, color) {
-        this.symbol = symbol;
+// Container class for Phantom_Piece elements
+class Phantom_Piece {
+    constructor(phantom_board, position, color) {
 
-        this.id = 'piece' + id;
+        this.id = id;
         id++;
 
-        // Set position on gameboard
+        this.phantom_board = phantom_board;
+
+        // Set position on this.phantom_board
         this.position = position;
-        gameboard[position] = this;
+        phantom_board[position] = this;
 
         this.color = color;
-
-        if (color == 'white') {
-            whitePieces.push(this);
-        } else {
-            blackPieces.push(this);
-        }
 
         this.active = false;
         this.alive = true;
 
-        this.wrapper = document.createElement('div');
-        this.wrapper.setAttribute('id', this.id);
-        this.text = document.createTextNode(this.symbol);
     }
 
-    // Creates the html element and positions it correctly
-    create() {
-        this.wrapper.style.color = this.color;
-        this.wrapper.style.position = 'absolute';
-
-        this.wrapper.appendChild(this.text);
-        cells[this.position].div.appendChild(this.wrapper);
-        this.updatePosition(this.position);
-
-        this.enableDragging();
-
-        this.hasMoved = false;
-    }
-
-    // Checks if a square is empty or has an enemy piece
+    // Checks if a square is empty or has an enemy Phantom_Piece
     canMoveTo(position) {
-        return (gameboard[position] instanceof Piece && gameboard[position].color != this.color) || !(gameboard[position] instanceof Piece);
+        return (this.phantom_board[position] instanceof Phantom_Piece && this.phantom_board[position].color != this.color) || !(this.phantom_board[position] instanceof Phantom_Piece);
     }
 
-    /* Tries to update the position of the piece. If a position
+    /* Tries to update the position of the Phantom_Piece. If a position
        is given, it will treat it as being 'placed' instead of
        moved by a player */
-    updatePosition(position, computer) {
+    updatePosition(position) {
         var oldPosition = this.position;
-        if (position != null) {
-            // Force the piece to move to the new position
-            gameboard[this.position] = null;
-            this.position = position;
-            if (computer == true) {
-                // If applicable, kill opposing piece
-                if (gameboard[position] instanceof Piece)
-                    gameboard[position].kill();
-            }
-        } else {
-            // Get X position from pos on screen
-            var newX = this.getLeft() - margin_left;
-            newX = Math.floor(newX / CELL_SIZE);
-
-            // Get Y position from pos on screen
-            var newY = this.getTop() - margin_top;
-            newY = Math.floor(newY / CELL_SIZE);
-
-            // Get cell id
-            var newPos = newX + (newY * 8);
-
-            // Check if this is a valid move
-            if (this.getValidMoves().includes(newPos)) {
-                // Update the piece's position
-                gameboard[this.position] = null;
-                this.position = newPos;
-
-                // If applicable, kill opposing piece
-                if (gameboard[newPos] instanceof Piece)
-                    gameboard[newPos].kill();
-            }
-        }
-
-        // Place piece in proper position in gameboard array
-        gameboard[this.position] = this;
-
-        // Position this within the cell
-        var posX = this.position % 8;
-        var posY = Math.floor(this.position / 8);
-
-        // Center within cell
-        var left = parseInt(cells[this.position].div.getBoundingClientRect().left) + CELL_SIZE / 6;
-        var top = margin_top + (posY * CELL_SIZE);
-
-        // Animate it if the computer is moving to help player see the move made
-        if (computer) {
-            $('#' + this.id).animate({ left: left + 'px', top: top + 'px' });
-        } else {
-            this.wrapper.style.left = left + 'px';
-            this.wrapper.style.top = top + 'px';
-        }
-
-        if (this.position != oldPosition) {
-            // Now the piece has moved
-            this.hasMoved = true;
-            ATTACK_BLACK = generateBlackAttackMap();
-            ATTACK_WHITE = generateWhiteAttackMap();
-
-            isCheck();
-
-            whiteTurn = !whiteTurn;
-            setStatus(whiteTurn);
-            setTimeout(playTurn, 200);
-
-            swapPlayer();
-        }
+        // Force the Phantom_Piece to move to the new position
+        this.phantom_board[this.position] = null;
+        this.position = position;
+            
+        // If applicable, kill opposing Phantom_Piece
+        if (this.phantom_board[position] instanceof Phantom_Piece)
+            this.phantom_board[position].kill();
+        
+        // Place Phantom_Piece in proper position in this.phantom_board array
+        this.phantom_board[this.position] = this;
 
         return this.position != oldPosition;
     }
 
-    // Kills the piece, making it no longer counted in move generation
+    // Kills the Phantom_Piece, making it no longer counted in move generation
     kill() {
-        this.wrapper.style.visibility = 'hidden';
         this.alive = false;
-
-        // Position this within the cell
-        var posX = this.position % 8;
-        var posY = Math.floor(this.position / 8);
-
-        // Center within cell
-        var left = parseInt(cells[this.position].div.getBoundingClientRect().left) + CELL_SIZE / 2.5;
-        var top = margin_top + (posY * CELL_SIZE) + CELL_SIZE / 2.5;
-
-        explosion(left, top, 3, 10, 10);
     }
 
-    // Gets the left position relative to board
-    getLeft() {
-        return parseInt((this.wrapper.style.left).slice(0, -2)) + (this.wrapper.clientWidth / 2);
-    }
-
-    // Gets top position relative to board
-    getTop() {
-        return parseInt((this.wrapper.style.top).slice(0, -2)) + (this.wrapper.clientHeight / 2);
-    }
-
-    // Set up drag and drop behavior
-    enableDragging() {
-        var delX, delY, posX, posY;
-
-        var piece = this;
-        var wrapper = this.wrapper;
-
-        wrapper.onmousedown = startDragging;
-
-        function startDragging(e) {
-            if (piece.active) {
-                // Get initial Position
-                posX = e.clientX;
-                posY = e.clientY;
-
-                // Set mouse listener methods
-                document.onmousemove = drag;
-                document.onmouseup = stopDragging;
-
-                // Highlight all valid moves for this piece
-                piece.highlightValidMoves();
-            }
-        }
-
-        function drag(e) {
-            // Calculate the offset
-            delX = posX - e.clientX;
-            delY = posY - e.clientY;
-
-            // Store position
-            posX = e.clientX;
-            posY = e.clientY;
-
-            // Update Position
-            wrapper.style.left = (wrapper.offsetLeft - delX) + "px";
-            wrapper.style.top = (wrapper.offsetTop - delY) + "px";
-        }
-
-        function stopDragging(e) {
-            // dehighlight any cells to reset for next piece
-            piece.dehighlightValidMoves();
-
-            // Try to move piece to its current location
-            var changed = piece.updatePosition();
-
-            // Stop using onmousemove()
-            this.onmousemove = null;
-        }
-
-    }
-
-    // Highlights all valid moves
-    highlightValidMoves() {
-        var moves = this.getValidMoves();
-        for (var i = 0; i < moves.length; i++) {
-            cells[moves[i]].highlight();
-        }
-    }
-
-    // Unhighlights any valid moves
-    dehighlightValidMoves() {
-        var moves = this.getValidMoves();
-        for (var i = 0; i < moves.length; i++) {
-            cells[moves[i]].dehighlight();
-        }
-    }
-
-    // Gets all squares that are attacked by this piece
+    // Gets all squares that are attacked by this Phantom_Piece
     getAttacks() {
         return [];
     }
 
-    // Gets all valid moves for this piece
+    // Gets all valid moves for this Phantom_Piece
     getValidMoves() {
         return [];
     }
 }
 
-// Pawn subclass of Piece
-class Pawn extends Piece {
-    constructor(position, color) {
-        super(PAWN, position, color);
+// Pawn subclass of Phantom_Piece
+class Phantom_Pawn extends Phantom_Piece {
+    constructor(phantom_board, position, color) {
+        super(phantom_board, position, color);
 
         this.hasMoved = false;
     }
@@ -272,12 +106,12 @@ class Pawn extends Piece {
         let forward = (this.color == 'white') ? -8 : +8;
 
         // Move forward one
-        if (!(gameboard[this.position + forward] instanceof Piece)) {
+        if (!(this.phantom_board[this.position + forward] instanceof Phantom_Piece)) {
             if (this.position + forward >= 0 && this.position + forward < 64) {
                 moves.push(this.position + forward);
 
                 // Move forward 2 if not yet moved
-                if (!this.hasMoved && !(gameboard[this.position + forward * 2] instanceof Piece)) {
+                if (!this.hasMoved && !(this.phantom_board[this.position + forward * 2] instanceof Phantom_Piece)) {
                     if (this.position + forward * 2 >= 0 && this.position + forward * 2 < 64) {
                         moves.push(this.position + forward * 2);
                     }
@@ -289,7 +123,7 @@ class Pawn extends Piece {
         let f1 = this.position + forward;
 
         if (parseInt((f1 - 1) / 8) * 8 == parseInt(f1 / 8) * 8) {
-            if (gameboard[f1 - 1] instanceof Piece && gameboard[f1 - 1].color != this.color) {
+            if (this.phantom_board[f1 - 1] instanceof Phantom_Piece && this.phantom_board[f1 - 1].color != this.color) {
                 if (f1 - 1 >= 0 && f1 - 1 < 64) {
                     moves.push(f1 - 1);
                 }
@@ -297,27 +131,27 @@ class Pawn extends Piece {
         }
 
         if (parseInt((f1 + 1) / 8) * 8 == parseInt(f1 / 8) * 8) {
-            if (gameboard[f1 + 1] instanceof Piece && gameboard[f1 + 1].color != this.color) {
+            if (this.phantom_board[f1 + 1] instanceof Phantom_Piece && this.phantom_board[f1 + 1].color != this.color) {
                 if (f1 + 1 >= 0 && f1 + 1 < 64) {
                     moves.push(f1 + 1);
                 }
             }
         }
 
-        if (inCheck == this.color) {
-            moves = checkedByOneFilter(this, moves);
+        if (phantomInCheck == this.color) {
+            moves = checkedPhantomByOneFilter(this, moves);
         }
 
-        pinnedFilter(this, moves);
+        pinnedPhantomFilter(this, moves);
 
         return moves;
     }
 }
 
-// Rook subclass of Piece
-class Rook extends Piece {
-    constructor(position, color) {
-        super(ROOK, position, color);
+// Rook subclass of Phantom_Piece
+class Phantom_Rook extends Phantom_Piece {
+    constructor(phantom_board, position, color) {
+        super(phantom_board, position, color);
 
         this.hasMoved = false;
     }
@@ -325,7 +159,7 @@ class Rook extends Piece {
     getAttacks() {
         let attacks = [];
 
-        getSliderPerpindicularAttacks(this, attacks);
+        getPhantomSliderPerpindicularAttacks(this, attacks);
 
         return attacks;
     }
@@ -335,8 +169,8 @@ class Rook extends Piece {
 
         // Up
         for (var pos = this.position - 8; pos >= 0; pos -= 8) {
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
 
                 break;
@@ -347,8 +181,8 @@ class Rook extends Piece {
 
         // Down
         for (var pos = this.position + 8; pos < 64; pos += 8) {
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
@@ -361,8 +195,8 @@ class Rook extends Piece {
             if (this.position % 8 == 0)
                 break;
 
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
@@ -375,8 +209,8 @@ class Rook extends Piece {
             if (this.position % 8 == 7)
                 break;
 
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
@@ -384,20 +218,20 @@ class Rook extends Piece {
             }
         }
 
-        if (inCheck == this.color) {
-            moves = checkedByOneFilter(this, moves);
+        if (phantomInCheck == this.color) {
+            moves = checkedPhantomByOneFilter(this, moves);
         }
 
-        pinnedFilter(this, moves);
+        pinnedPhantomFilter(this, moves);
 
         return moves;
     }
 }
 
-// Bishop subclass of Piece
-class Bishop extends Piece {
-    constructor(position, color) {
-        super(BISHOP, position, color);
+// Bishop subclass of Phantom_Piece
+class Phantom_Bishop extends Phantom_Piece {
+    constructor(phantom_board, position, color) {
+        super(phantom_board, position, color);
 
         this.hasMoved = false;
     }
@@ -405,7 +239,7 @@ class Bishop extends Piece {
     getAttacks() {
         let attacks = [];
 
-        getSliderDiagonalAttacks(this, attacks);
+        getPhantomSliderDiagonalAttacks(this, attacks);
 
         return attacks;
     }
@@ -418,15 +252,15 @@ class Bishop extends Piece {
             if (this.position % 8 == 7)
                 break;
 
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
                 moves.push(pos);
             }
 
-            if (gameboard[pos] instanceof Piece || pos % 8 == 7)
+            if (this.phantom_board[pos] instanceof Phantom_Piece || pos % 8 == 7)
                 break;
         }
 
@@ -435,15 +269,15 @@ class Bishop extends Piece {
             if (this.position % 8 == 7)
                 break;
 
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
                 moves.push(pos);
             }
 
-            if (gameboard[pos] instanceof Piece || pos % 8 == 7)
+            if (this.phantom_board[pos] instanceof Phantom_Piece || pos % 8 == 7)
                 break;
         }
 
@@ -452,15 +286,15 @@ class Bishop extends Piece {
             if (this.position % 8 == 0)
                 break;
 
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
                 moves.push(pos);
             }
 
-            if (gameboard[pos] instanceof Piece || pos % 8 == 0)
+            if (this.phantom_board[pos] instanceof Phantom_Piece || pos % 8 == 0)
                 break;
         }
 
@@ -469,32 +303,32 @@ class Bishop extends Piece {
             if (this.position % 8 == 0)
                 break;
 
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
                 moves.push(pos);
             }
 
-            if (gameboard[pos] instanceof Piece || pos % 8 == 0)
+            if (this.phantom_board[pos] instanceof Phantom_Piece || pos % 8 == 0)
                 break;
         }
 
-        if (inCheck == this.color) {
-            moves = checkedByOneFilter(this, moves);
+        if (phantomInCheck == this.color) {
+            moves = checkedPhantomByOneFilter(this, moves);
         }
 
-        pinnedFilter(this, moves);
+        pinnedPhantomFilter(this, moves);
 
         return moves;
     }
 }
 
-// Knight subclass of Piece
-class Knight extends Piece {
-    constructor(position, color) {
-        super(KNIGHT, position, color);
+// Knight subclass of Phantom_Piece
+class Phantom_Knight extends Phantom_Piece {
+    constructor(phantom_board, position, color) {
+        super(phantom_board, position, color);
 
         this.hasMoved = false;
     }
@@ -566,56 +400,56 @@ class Knight extends Piece {
         // Left-Down
         pos = this.position - 2 + 8;
         if (parseInt(pos / 8) == parseInt((this.position + 8) / 8)) {
-            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+            if (!(this.phantom_board[pos] instanceof Phantom_Piece) || this.phantom_board[pos].color != this.color)
                 moves.push(pos);
         }
 
         // Left-Up
         pos = this.position - 2 - 8;
         if (parseInt(pos / 8) == parseInt((this.position - 8) / 8)) {
-            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+            if (!(this.phantom_board[pos] instanceof Phantom_Piece) || this.phantom_board[pos].color != this.color)
                 moves.push(pos);
         }
 
         // Up-Left
         pos = this.position - 1 - 16;
         if (parseInt(pos / 8) == parseInt((this.position - 16) / 8)) {
-            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+            if (!(this.phantom_board[pos] instanceof Phantom_Piece) || this.phantom_board[pos].color != this.color)
                 moves.push(pos);
         }
 
         // Up-Right
         pos = this.position + 1 - 16;
         if (parseInt(pos / 8) == parseInt((this.position - 16) / 8)) {
-            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+            if (!(this.phantom_board[pos] instanceof Phantom_Piece) || this.phantom_board[pos].color != this.color)
                 moves.push(pos);
         }
 
         // Right-Up
         pos = this.position + 2 - 8;
         if (parseInt(pos / 8) == parseInt((this.position - 8) / 8)) {
-            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+            if (!(this.phantom_board[pos] instanceof Phantom_Piece) || this.phantom_board[pos].color != this.color)
                 moves.push(pos);
         }
 
         // Right-Down
         pos = this.position + 2 + 8;
         if (parseInt(pos / 8) == parseInt((this.position + 8) / 8)) {
-            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+            if (!(this.phantom_board[pos] instanceof Phantom_Piece) || this.phantom_board[pos].color != this.color)
                 moves.push(pos);
         }
 
         // Down-Right
         pos = this.position + 1 + 16;
         if (parseInt(pos / 8) == parseInt((this.position + 16) / 8)) {
-            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+            if (!(this.phantom_board[pos] instanceof Phantom_Piece) || this.phantom_board[pos].color != this.color)
                 moves.push(pos);
         }
 
         // Down - Left
         pos = this.position - 1 + 16;
         if (parseInt(pos / 8) == parseInt((this.position + 16) / 8)) {
-            if (!(gameboard[pos] instanceof Piece) || gameboard[pos].color != this.color)
+            if (!(this.phantom_board[pos] instanceof Phantom_Piece) || this.phantom_board[pos].color != this.color)
                 moves.push(pos);
         }
 
@@ -623,18 +457,18 @@ class Knight extends Piece {
             return pos >= 0 && pos < 64;
         })
 
-        if (inCheck == this.color) {
-            moves = checkedByOneFilter(this, moves);
+        if (phantomInCheck == this.color) {
+            moves = checkedPhantomByOneFilter(this, moves);
         }
 
         return moves;
     }
 }
 
-// Queen subclass of Piece
-class Queen extends Piece {
-    constructor(position, color) {
-        super(QUEEN, position, color);
+// Queen subclass of Phantom_Piece
+class Phantom_Queen extends Phantom_Piece {
+    constructor(phantom_board, position, color) {
+        super(phantom_board, position, color);
 
         this.hasMoved = false;
     }
@@ -642,8 +476,8 @@ class Queen extends Piece {
     getAttacks() {
         let attacks = [];
 
-        getSliderPerpindicularAttacks(this, attacks);
-        getSliderDiagonalAttacks(this, attacks);
+        getPhantomSliderPerpindicularAttacks(this, attacks);
+        getPhantomSliderDiagonalAttacks(this, attacks);
 
         return attacks;
     }
@@ -653,8 +487,8 @@ class Queen extends Piece {
 
         // Up
         for (var pos = this.position - 8; pos >= 0; pos -= 8) {
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
@@ -664,8 +498,8 @@ class Queen extends Piece {
 
         // Down
         for (var pos = this.position + 8; pos < 64; pos += 8) {
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
@@ -678,8 +512,8 @@ class Queen extends Piece {
             if (this.position % 8 == 0)
                 break;
 
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
@@ -691,8 +525,8 @@ class Queen extends Piece {
         for (var pos = this.position + 1; pos < (parseInt(this.position / 8) + 1) * 8; pos++) {
             if (this.position % 8 == 7)
                 break;
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
@@ -705,15 +539,15 @@ class Queen extends Piece {
             if (this.position % 8 == 7)
                 break;
 
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
                 moves.push(pos);
             }
 
-            if (gameboard[pos] instanceof Piece || pos % 8 == 7)
+            if (this.phantom_board[pos] instanceof Phantom_Piece || pos % 8 == 7)
                 break;
         }
 
@@ -722,15 +556,15 @@ class Queen extends Piece {
             if (this.position % 8 == 7)
                 break;
 
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
                 moves.push(pos);
             }
 
-            if (gameboard[pos] instanceof Piece || pos % 8 == 7)
+            if (this.phantom_board[pos] instanceof Phantom_Piece || pos % 8 == 7)
                 break;
         }
 
@@ -739,15 +573,15 @@ class Queen extends Piece {
             if (this.position % 8 == 0)
                 break;
 
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
                 moves.push(pos);
             }
 
-            if (gameboard[pos] instanceof Piece || pos % 8 == 0)
+            if (this.phantom_board[pos] instanceof Phantom_Piece || pos % 8 == 0)
                 break;
         }
 
@@ -756,37 +590,37 @@ class Queen extends Piece {
             if (this.position % 8 == 0)
                 break;
 
-            if (gameboard[pos] instanceof Piece) {
-                if (gameboard[pos].color != this.color)
+            if (this.phantom_board[pos] instanceof Phantom_Piece) {
+                if (this.phantom_board[pos].color != this.color)
                     moves.push(pos);
                 break;
             } else {
                 moves.push(pos);
             }
 
-            if (gameboard[pos] instanceof Piece || pos % 8 == 0)
+            if (this.phantom_board[pos] instanceof Phantom_Piece || pos % 8 == 0)
                 break;
         }
 
-        if (inCheck == this.color) {
-            moves = checkedByOneFilter(this, moves);
+        if (phantomInCheck == this.color) {
+            moves = checkedPhantomByOneFilter(this, moves);
         }
 
-        pinnedFilter(this, moves);
+        pinnedPhantomFilter(this, moves);
 
         return moves;
     }
 }
 
-// King subclass of Piece
-class King extends Piece {
-    constructor(position, color) {
-        super(KING, position, color);
+// King subclass of Phantom_Piece
+class Phantom_King extends Phantom_Piece {
+    constructor(phantom_board, position, color) {
+        super(phantom_board, position, color);
 
         if (color == 'white') {
-            WHITE_KING = this;
+            PHANTOM_WHITE_KING = this;
         } else {
-            BLACK_KING = this;
+            PHANTOM_BLACK_KING = this;
         }
 
         this.hasMoved = false;
@@ -874,29 +708,18 @@ class King extends Piece {
         if (this.canMoveTo(pos + 9) && pos + 9 <= (right + 8) && pos + 9 < 64)
             moves.push(pos + 9);
 
-        removeAttackedSquares(this, moves);
+        removePhantomAttackedSquares(this, moves);
 
         return moves;
     }
 }
 
-// Finds the correct piece object on the board using the wrapper div
-function getPieceFromWrapper(wrapper) {
-    for (var i = 0; i < 64; i++) {
-        if (gameboard[i] instanceof Piece) {
-
-            if (gameboard[i].wrapper.isEqualNode(wrapper))
-                return gameboard[i];
-        }
-    }
-}
-
 // Get a map of all squares white can attack
-function generateWhiteAttackMap() {
+function generatePhantomWhiteAttackMap(phantom_board) {
     var attackedSquares = [64];
     for (var i = 0; i < 64; i++) {
-        if (gameboard[i] instanceof Piece && gameboard[i].color == 'white') {
-            var attacks = gameboard[i].getAttacks();
+        if (phantom_board[i] instanceof Phantom_Piece && phantom_board[i].color == 'white') {
+            var attacks = phantom_board[i].getAttacks();
 
             if (attacks == null) {
                 continue;
@@ -912,11 +735,11 @@ function generateWhiteAttackMap() {
 }
 
 // Get a map of all squares black can attack
-function generateBlackAttackMap() {
+function generatePhantomBlackAttackMap(phantom_board) {
     var attackedSquares = [64];
     for (var i = 0; i < 64; i++) {
-        if (gameboard[i] instanceof Piece && gameboard[i].color == 'black') {
-            var attacks = gameboard[i].getAttacks();
+        if (phantom_board[i] instanceof Phantom_Piece && phantom_board[i].color == 'black') {
+            var attacks = phantom_board[i].getAttacks();
             if (attacks == null) {
                 continue;
             }
@@ -930,14 +753,15 @@ function generateBlackAttackMap() {
 }
 
 // Return slider attacks going up, down, left, and right
-function getSliderPerpindicularAttacks(piece, attacks) {
+function getPhantomSliderPerpindicularAttacks(Phantom_Piece, attacks) {
     // Up
-    for (var pos = piece.position - 8; pos >= 0; pos -= 8) {
-        if (gameboard[pos] instanceof Piece) {
+    phantom_board = Phantom_Piece.phantom_board;
+    for (var pos = Phantom_Piece.position - 8; pos >= 0; pos -= 8) {
+        if (phantom_board[pos] instanceof Phantom_Piece) {
             attacks.push(pos);
 
             // Ignore the king on sliders
-            if (!(gameboard[pos] instanceof King && gameboard[pos].color != piece.color))
+            if (!(phantom_board[pos] instanceof Phantom_King && phantom_board[pos].color != Phantom_Piece.color))
                 break;
         } else {
             attacks.push(pos);
@@ -945,12 +769,12 @@ function getSliderPerpindicularAttacks(piece, attacks) {
     }
 
     // Down
-    for (var pos = piece.position + 8; pos < 64; pos += 8) {
-        if (gameboard[pos] instanceof Piece) {
+    for (var pos = Phantom_Piece.position + 8; pos < 64; pos += 8) {
+        if (phantom_board[pos] instanceof Phantom_Piece) {
             attacks.push(pos);
 
             // Ignore the king on sliders
-            if (!(gameboard[pos] instanceof King && gameboard[pos].color != piece.color))
+            if (!(phantom_board[pos] instanceof Phantom_King && phantom_board[pos].color != Phantom_Piece.color))
                 break;
         } else {
             attacks.push(pos);
@@ -958,12 +782,12 @@ function getSliderPerpindicularAttacks(piece, attacks) {
     }
 
     // Left
-    for (var pos = piece.position - 1; pos >= parseInt(piece.position / 8) * 8; pos--) {
-        if (gameboard[pos] instanceof Piece) {
+    for (var pos = Phantom_Piece.position - 1; pos >= parseInt(Phantom_Piece.position / 8) * 8; pos--) {
+        if (phantom_board[pos] instanceof Phantom_Piece) {
             attacks.push(pos);
 
             // Ignore the king on sliders
-            if (!(gameboard[pos] instanceof King && gameboard[pos].color != piece.color))
+            if (!(phantom_board[pos] instanceof Phantom_King && phantom_board[pos].color != Phantom_Piece.color))
                 break;
         } else {
             attacks.push(pos);
@@ -971,12 +795,12 @@ function getSliderPerpindicularAttacks(piece, attacks) {
     }
 
     // Right
-    for (var pos = piece.position + 1; pos < parseInt(piece.position / 8) * 8 + 8; pos++) {
-        if (gameboard[pos] instanceof Piece) {
+    for (var pos = Phantom_Piece.position + 1; pos < parseInt(Phantom_Piece.position / 8) * 8 + 8; pos++) {
+        if (phantom_board[pos] instanceof Phantom_Piece) {
             attacks.push(pos);
 
             // Ignore the king on sliders
-            if (!(gameboard[pos] instanceof King && gameboard[pos].color != piece.color))
+            if (!(phantom_board[pos] instanceof Phantom_King && phantom_board[pos].color != Phantom_Piece.color))
                 break;
         } else {
             attacks.push(pos);
@@ -985,18 +809,20 @@ function getSliderPerpindicularAttacks(piece, attacks) {
 }
 
 // Get slider attacks going diagonally
-function getSliderDiagonalAttacks(piece, attacks) {
-    // Up + Right
-    for (var pos = piece.position - 7; pos >= 0; pos -= 7) {
+function getPhantomSliderDiagonalAttacks(Phantom_Piece, attacks) {
+    phantom_board = Phantom_Piece.phantom_board;
 
-        if (piece.position % 8 == 7)
+    // Up + Right
+    for (var pos = Phantom_Piece.position - 7; pos >= 0; pos -= 7) {
+
+        if (Phantom_Piece.position % 8 == 7)
             break;
 
         attacks.push(pos);
 
-        if (gameboard[pos] instanceof Piece) {
+        if (phantom_board[pos] instanceof Phantom_Piece) {
             // Ignore king for sliders
-            if (!(gameboard[pos] instanceof King && gameboard[pos].color != piece.color))
+            if (!(phantom_board[pos] instanceof Phantom_King && phantom_board[pos].color != Phantom_Piece.color))
                 break;
         }
 
@@ -1005,16 +831,16 @@ function getSliderDiagonalAttacks(piece, attacks) {
     }
 
     // Up + Left
-    for (var pos = piece.position - 9; pos >= 0; pos -= 9) {
+    for (var pos = Phantom_Piece.position - 9; pos >= 0; pos -= 9) {
 
-        if (piece.position % 8 == 0)
+        if (Phantom_Piece.position % 8 == 0)
             break;
 
         attacks.push(pos);
 
-        if (gameboard[pos] instanceof Piece) {
+        if (phantom_board[pos] instanceof Phantom_Piece) {
             // Ignore king for sliders
-            if (!(gameboard[pos] instanceof King && gameboard[pos].color != piece.color))
+            if (!(phantom_board[pos] instanceof Phantom_King && phantom_board[pos].color != Phantom_Piece.color))
                 break;
         }
 
@@ -1023,16 +849,16 @@ function getSliderDiagonalAttacks(piece, attacks) {
     }
 
     // Down + Right
-    for (var pos = piece.position + 9; pos >= 0; pos += 9) {
+    for (var pos = Phantom_Piece.position + 9; pos >= 0; pos += 9) {
 
-        if (piece.position % 8 == 7)
+        if (Phantom_Piece.position % 8 == 7)
             break;
 
         attacks.push(pos);
 
-        if (gameboard[pos] instanceof Piece) {
+        if (phantom_board[pos] instanceof Phantom_Piece) {
             // Ignore king for sliders
-            if (!(gameboard[pos] instanceof King && gameboard[pos].color != piece.color))
+            if (!(phantom_board[pos] instanceof Phantom_King && phantom_board[pos].color != Phantom_Piece.color))
                 break;
         }
 
@@ -1041,16 +867,16 @@ function getSliderDiagonalAttacks(piece, attacks) {
     }
 
     // Down + Left
-    for (var pos = piece.position + 7; pos >= 0; pos += 7) {
+    for (var pos = Phantom_Piece.position + 7; pos >= 0; pos += 7) {
 
-        if (piece.position % 8 == 0)
+        if (Phantom_Piece.position % 8 == 0)
             break;
 
         attacks.push(pos);
 
-        if (gameboard[pos] instanceof Piece) {
+        if (phantom_board[pos] instanceof Phantom_Piece) {
             // Ignore king for sliders
-            if (!(gameboard[pos] instanceof King && gameboard[pos].color != piece.color))
+            if (!(phantom_board[pos] instanceof Phantom_King && phantom_board[pos].color != Phantom_Piece.color))
                 break;
         }
 
@@ -1060,17 +886,17 @@ function getSliderDiagonalAttacks(piece, attacks) {
 }
 
 // Remove any squares that are under atack
-function removeAttackedSquares(piece, moves) {
-    if (piece.color == 'white') {
+function removePhantomAttackedSquares(Phantom_Piece, moves) {
+    if (Phantom_Piece.color == 'white') {
         for (var i = 0; i < moves.length; i++) {
-            if (ATTACK_BLACK[moves[i]] == 1) {
+            if (PHANTOM_ATTACK_BLACK[moves[i]] == 1) {
                 moves.splice(i, 1);
                 i--;
             }
         }
     } else {
         for (var i = 0; i < moves.length; i++) {
-            if (ATTACK_WHITE[moves[i]] == 1) {
+            if (PHANTOM_ATTACK_WHITE[moves[i]] == 1) {
                 moves.splice(i, 1);
                 i--;
             }
@@ -1078,45 +904,24 @@ function removeAttackedSquares(piece, moves) {
     }
 }
 
-// Displays the white attacks from dev panel
-function showWhiteAttacks() {
-    for (var i = 0; i < 64; i++) {
-        if (ATTACK_WHITE[i] == 1) {
-            cells[i].div.style.backgroundColor = 'red';
-        } else {
-            cells[i].dehighlight();
-        }
-    }
-}
-
-// Displays the black attacks from dev panel
-function showBlackAttacks() {
-    for (var i = 0; i < 64; i++) {
-        if (ATTACK_BLACK[i] == 1) {
-            cells[i].div.style.backgroundColor = 'red';
-        } else {
-            cells[i].dehighlight();
-        }
-    }
-}
-
-// Filter out moves when checked by at least one piece
-function checkedByOneFilter(piece, moves) {
+// Filter out moves when checked by at least one Phantom_Piece
+function checkedPhantomByOneFilter(Phantom_Piece, moves) {
+    phantom_board = Phantom_Piece.phantom_board;
     let attackerPos = -1;
 
-    if (piece.color == 'white' || true) {
+    if (Phantom_Piece.color == 'white' || true) {
         for (var i = 0; i < 64; i++) {
-            var attacker = gameboard[i];
-            if (attacker instanceof Piece && attacker.color != piece.color) {
+            var attacker = phantom_board[i];
+            if (attacker instanceof Phantom_Piece && attacker.color != Phantom_Piece.color) {
                 var attackerMoves = attacker.getValidMoves();
                 for (var j = 0; j < attackerMoves.length; j++) {
-                    if (piece.color == 'white') {
-                        if (attackerMoves[j] == WHITE_KING.position) {
+                    if (Phantom_Piece.color == 'white') {
+                        if (attackerMoves[j] == PHANTOM_WHITE_KING.position) {
                             attackerPos = i;
                             break;
                         }
                     } else {
-                        if (attackerMoves[j] == BLACK_KING.position) {
+                        if (attackerMoves[j] == PHANTOM_BLACK_KING.position) {
                             attackerPos = i;
                             break;
 
@@ -1126,7 +931,7 @@ function checkedByOneFilter(piece, moves) {
             }
         }
 
-        var validMoves = generatePushMap(piece, gameboard[attackerPos], moves);
+        var validMoves = generatePhantomPushMap(Phantom_Piece, phantom_board[attackerPos], moves);
 
         if (moves.includes(attackerPos)) {
             validMoves.push(attackerPos);
@@ -1137,12 +942,12 @@ function checkedByOneFilter(piece, moves) {
     }
 }
 
-// Get a map of where the piece can move to protect the king
-function generatePushMap(defender, attacker, moves) {
+// Get a map of where the Phantom_Piece can move to protect the king
+function generatePhantomPushMap(defender, attacker, moves) {
 
     pushMoves = [];
-    if (attacker instanceof Rook || attacker instanceof Queen || attacker instanceof Bishop) {
-        let kingPos = (defender.color == 'white') ? WHITE_KING.position : BLACK_KING.position;
+    if (attacker instanceof Phantom_Rook || attacker instanceof Phantom_Queen || attacker instanceof Phantom_Bishop) {
+        let kingPos = (defender.color == 'white') ? PHANTOM_WHITE_KING.position : PHANTOM_BLACK_KING.position;
         let attPos = attacker.position;
 
         // If attPos is in the same column, ray is vertical
@@ -1221,24 +1026,29 @@ function generatePushMap(defender, attacker, moves) {
     return validMoves;
 }
 
-function pinnedFilter(piece, moves) {
-    let opponentPieces = (piece.color == 'white') ? blackPieces : whitePieces;
+function pinnedPhantomFilter(Phantom_Piece, moves) {
+    phantom_board = Phantom_Piece.phantom_board;
+    for (var i = 0; i < phantom_board.length; i++) {
+        if (phantom_board[i] instanceof Phantom_Piece && phantom_board[i].color != Phantom_Piece.color) {
+            opponentPieces.push(phantom_board[i]);
+        }
+    }
 
     // Check Perpindicular Pins
-    if (piece instanceof Rook || piece instanceof Queen || piece instanceof Pawn) {
+    if (Phantom_Piece instanceof Phantom_Rook || Phantom_Piece instanceof Phantom_Queen || Phantom_Piece instanceof Phantom_Pawn) {
         for (let i = 0; i < opponentPieces.length; i++) {
             let opponentPiece = opponentPieces[i];
 
-            if (opponentPiece instanceof Rook || opponentPiece instanceof Queen) {
+            if (opponentPiece instanceof Phantom_Rook || opponentPiece instanceof Phantom_Queen) {
                 let opponentMoves = [];
-                getSliderPerpindicularAttacks(opponentPiece, opponentMoves);
+                getPhantomSliderPerpindicularAttacks(opponentPiece, opponentMoves);
 
                 let kingMoves = [];
 
-                let king = (piece.color == 'white') ? WHITE_KING : BLACK_KING;
-                getSliderPerpindicularAttacks(king, kingMoves);
+                let king = (Phantom_Piece.color == 'white') ? PHANTOM_WHITE_KING : PHANTOM_BLACK_KING;
+                getPhantomSliderPerpindicularAttacks(king, kingMoves);
 
-                if (opponentMoves.includes(piece.position) && kingMoves.includes(piece.position)) {
+                if (opponentMoves.includes(Phantom_Piece.position) && kingMoves.includes(Phantom_Piece.position)) {
                     let pinnedRay = [];
 
                     // If pinned ray is horizontal
@@ -1289,20 +1099,20 @@ function pinnedFilter(piece, moves) {
     }
 
     // Check diagonal pins
-    if (piece instanceof Bishop || piece instanceof Queen || piece instanceof Pawn) {
+    if (Phantom_Piece instanceof Phantom_Bishop || Phantom_Piece instanceof Phantom_Queen || Phantom_Piece instanceof Phantom_Pawn) {
         for (let i = 0; i < opponentPieces.length; i++) {
             let opponentPiece = opponentPieces[i];
 
-            if (opponentPiece instanceof Bishop || opponentPiece instanceof Queen) {
+            if (opponentPiece instanceof Phantom_Bishop || opponentPiece instanceof Phantom_Queen) {
                 let opponentMoves = [];
-                getSliderDiagonalAttacks(opponentPiece, opponentMoves);
+                getPhantomSliderDiagonalAttacks(opponentPiece, opponentMoves);
 
                 let kingMoves = [];
 
-                let king = (piece.color == 'white') ? WHITE_KING : BLACK_KING;
-                getSliderDiagonalAttacks(king, kingMoves);
+                let king = (Phantom_Piece.color == 'white') ? PHANTOM_WHITE_KING : PHANTOM_BLACK_KING;
+                getPhantomSliderDiagonalAttacks(king, kingMoves);
 
-                if (opponentMoves.includes(piece.position) && kingMoves.includes(piece.position)) {
+                if (opponentMoves.includes(Phantom_Piece.position) && kingMoves.includes(Phantom_Piece.position)) {
                     let pinnedRay = [];
 
                     // If ray goes left from king
@@ -1347,5 +1157,4 @@ function pinnedFilter(piece, moves) {
             }
         }
     }
-
 }

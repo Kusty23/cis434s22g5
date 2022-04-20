@@ -195,14 +195,14 @@ function playTurn() {
         if (mode == 'pvc' || mode == 'cvc') {
 			let moved = false;
 			while (!moved) {
-            	if (firstMove) {
-                	var moves = getAllBlackPieceMoves();
+                if (firstMove) {
+                    var moves = getAllBlackPieceMoves();
                     let move = moves[parseInt(Math.random() * moves.length)];
                     
                     gameboard[move[0]].updatePosition(move[1], true);
                     firstMove = false;
                 } else {
-                    var bestMove = calculateBestMove(gameboard, 3, false);
+                    var bestMove = calculateBestMove(gameboard, 4, false);
                     gameboard[bestMove[0]].updatePosition(bestMove[1], true);
                 }
                 moved = true;
@@ -368,7 +368,6 @@ function getAllBlackPieceMoves() {
             moves.push([blackPieces[i].position, blackPieces[i].getValidMoves()[j]]);
         }
     }
-
-    console.log(moves);
+    
     return moves;
 }

@@ -168,16 +168,17 @@ function playTurn() {
         if (mode == 'cvc') {
             let moved = false;
             while (!moved) {
-                let piece = whitePieces[parseInt(Math.random() * whitePieces.length)];
-
-                let moves = piece.getValidMoves();
-                if (piece.alive && moves.length > 0) {
+                if (firstMove) {
+                    var moves = getAllWhitePieceMoves();
                     let move = moves[parseInt(Math.random() * moves.length)];
-                    console.log(piece);
-                    console.log('was moved by white to ' + move);
-                    piece.updatePosition(move, true);
-                    moved = true;
+
+                    gameboard[move[0]].updatePosition(move[1], true);
+                    firstMove = false;
+                } else {
+                    var bestMove = calculateBestMove(gameboard, 3, true);
+                    gameboard[bestMove[0]].updatePosition(bestMove[1], true);
                 }
+                moved = true;
             }
         }
     }
@@ -191,18 +192,18 @@ function playTurn() {
         }
 
         activateBlack();
-        
+
         if (mode == 'pvc' || mode == 'cvc') {
 			let moved = false;
 			while (!moved) {
                 if (firstMove) {
                     var moves = getAllBlackPieceMoves();
                     let move = moves[parseInt(Math.random() * moves.length)];
-                    
+
                     gameboard[move[0]].updatePosition(move[1], true);
                     firstMove = false;
                 } else {
-                    var bestMove = calculateBestMove(gameboard, 4, false);
+                    var bestMove = calculateBestMove(gameboard, 3, false);
                     gameboard[bestMove[0]].updatePosition(bestMove[1], true);
                 }
                 moved = true;
@@ -357,6 +358,21 @@ function getAllBlackMoves() {
     return moves;
 }
 
+function getAllWhitePieceMoves() {
+    let moves = [];
+
+    for (var i = 0; i < whitePieces.length; i++) {
+        if (whitePieces[i].alive == false) {
+            continue;
+        }
+        for (var j = 0; j < whitePieces[i].getValidMoves().length; j++) {
+            moves.push([whitePieces[i].position, whitePieces[i].getValidMoves()[j]]);
+        }
+    }
+
+    return moves;
+}
+
 function getAllBlackPieceMoves() {
     let moves = [];
 
@@ -368,6 +384,6 @@ function getAllBlackPieceMoves() {
             moves.push([blackPieces[i].position, blackPieces[i].getValidMoves()[j]]);
         }
     }
-    
+
     return moves;
 }

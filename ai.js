@@ -24,9 +24,11 @@ function cloneGameBoard(board) {
 }
 
 function calculateBestMove(board, depth, isMaximizingPlayer) {
-	var possibleMoves = getAllBlackPieceMoves();
+	var possibleMoves = isMaximizingPlayer ? getAllWhitePieceMoves() : getAllBlackPieceMoves();
 	var bestMove;
-	var bestValue = Infinity;
+	var bestValue = isMaximizingPlayer ? -Infinity : Infinity;
+
+	possibleMoves.sort(() => Math.random() - 0.5);
 
 	for (var i = 0; i < possibleMoves.length; i++) {
 		var pboard = cloneGameBoard(board);
@@ -36,10 +38,19 @@ function calculateBestMove(board, depth, isMaximizingPlayer) {
 
 		var value = minimax(pboard, depth - 1, !isMaximizingPlayer);
 
-		if (value <= bestValue) {
-			bestValue = value;
-			bestMove = move;
+		if (isMaximizingPlayer) {
+			if (value >= bestValue) {
+				bestValue = value;
+				bestMove = move;
+			}
 		}
+		else {
+			if (value <= bestValue) {
+				bestValue = value;
+				bestMove = move;
+			}
+		}
+
 	}
 
 	return bestMove;

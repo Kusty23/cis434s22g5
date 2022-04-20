@@ -34,7 +34,7 @@ class Particle {
 
         $(this.div).animate({
             opacity: 0,
-        }, 1000);
+        }, 500);
     }
 }
 

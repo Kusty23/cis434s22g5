@@ -175,7 +175,7 @@ function playTurn() {
                     gameboard[move[0]].updatePosition(move[1], true);
                     firstMove = false;
                 } else {
-                    var bestMove = calculateBestMove(gameboard, 3, true);
+                    var bestMove = calculateBestMove(gameboard, 4, true);
                     gameboard[bestMove[0]].updatePosition(bestMove[1], true);
                 }
                 moved = true;
@@ -203,7 +203,7 @@ function playTurn() {
                     gameboard[move[0]].updatePosition(move[1], true);
                     firstMove = false;
                 } else {
-                    var bestMove = calculateBestMove(gameboard, 3, false);
+                    var bestMove = calculateBestMove(gameboard, 4, false);
                     gameboard[bestMove[0]].updatePosition(bestMove[1], true);
                 }
                 moved = true;

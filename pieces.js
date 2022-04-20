@@ -123,7 +123,7 @@ class Piece {
 
             whiteTurn = !whiteTurn;
             setStatus(whiteTurn);
-            setTimeout(playTurn, 200);
+            setTimeout(playTurn, 800);
 
             swapPlayer();
         }

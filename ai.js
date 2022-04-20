@@ -24,8 +24,6 @@ function cloneGameBoard(board) {
 }
 
 function calculateBestMove(board, depth, isMaximizingPlayer) {
-	//console.log("-----------------------------");
-
 	var possibleMoves = getAllBlackPieceMoves();
 	var bestMove;
 	var bestValue = Infinity;
@@ -36,52 +34,29 @@ function calculateBestMove(board, depth, isMaximizingPlayer) {
 		var move = possibleMoves[i];
 		pboard[move[0]].updatePosition(move[1], true);
 
-		//console.log("test1");
 		var value = minimax(pboard, depth - 1, !isMaximizingPlayer);
-		//console.log(move);
-		//console.log(value);
-
 
 		if (value <= bestValue) {
 			bestValue = value;
 			bestMove = move;
 		}
-
-		/*
-		// Take the negative as AI is the black (minimizing) player
-		//var boardValue = evaluateBoard(pboard1);
-		if (boardValue >= bestValue) {
-			bestValue = boardValue;
-			bestMove = move;
-		} */
 	}
 
 	return bestMove;
 }
 
 function minimax(board, depth, isMaximizingPlayer) {
-	//console.log(isMaximizingPlayer);
-
-	if (depth <= 0) {	
-		//console.log("test2");
+	if (depth <= 0) {
 		return evaluateBoard(board);
 	}
-	
-	//console.log("test3");
-	//console.log(isMaximizingPlayer + "Pre if Maximizing");
 
 	var pboard = cloneGameBoard(board);
-	if (isMaximizingPlayer) {																			// Where issues are occurring
-		//console.log("test5");
-
+	if (isMaximizingPlayer) {
 		var moves = [];
-		
+
 		for (var i = 0; i < 64; i++) {
-			//console.log(pboard[i]);
 			if (pboard[i] instanceof Phantom_Piece && pboard[i].color == "white") {
-				//console.log("test9");
 				for (var j = 0; j < pboard[i].getValidMoves().length; j++) {
-					//console.log("test8");
 					moves.push([pboard[i].position, pboard[i].getValidMoves()[j]]);
 				}
 			}
@@ -89,28 +64,22 @@ function minimax(board, depth, isMaximizingPlayer) {
 
 		var bestValue = -Infinity;
 		for (var i = 0; i < moves.length; i++) {
-			
+
 			tempboard = cloneGameBoard(pboard);
-			
+
 			var move = moves[i];
 			tempboard[move[0]].updatePosition(move[1], false);
-			
-			//console.log(tempboard);
-			//console.log(depth);
-			//console.log(isMaximizingPlayer);
 
 			let value = minimax(tempboard, depth - 1, !isMaximizingPlayer);
 			if (value > bestValue) {
-				//console.log(value);
 				bestValue = value;
 			}
 		}
 
 		return bestValue;
-	} else {																							// Where issues are occurring.
+	} else {
 		var moves = [];
-		
-		//console.log("test4");
+
 		for (let i = 0; i < 64; i++) {
 			if (pboard[i] instanceof Phantom_Piece && pboard[i].color == "black") {
 				for (var j = 0; j < pboard[i].getValidMoves().length; j++) {
@@ -126,13 +95,8 @@ function minimax(board, depth, isMaximizingPlayer) {
 			var move = moves[i];
 			tempboard[move[0]].updatePosition(move[1], true);
 
-			//console.log(tempboard);
-			//console.log(depth);
-			//console.log(isMaximizingPlayer);
-
-			//console.log(isMaximizingPlayer + "Pre minimax2 Maximizing");
 			let value = minimax(tempboard, depth - 1, !isMaximizingPlayer);
-			//console.log(isMaximizingPlayer + "After minimax2 Maximizing");
+
 			if (value < bestValue) {
 				bestValue = value;
 			}

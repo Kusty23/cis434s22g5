@@ -119,8 +119,6 @@ class Piece {
             ATTACK_BLACK = generateBlackAttackMap();
             ATTACK_WHITE = generateWhiteAttackMap();
 
-            isCheck();
-
             whiteTurn = !whiteTurn;
             setStatus(whiteTurn);
             setTimeout(playTurn, 800);

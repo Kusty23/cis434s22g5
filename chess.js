@@ -163,6 +163,8 @@ function playTurn() {
             return;
         }
 
+        isCheck();
+
         activateWhite();
 
         if (mode == 'cvc') {
@@ -190,6 +192,8 @@ function playTurn() {
             endGame();
             return;
         }
+
+        isCheck();
 
         activateBlack();
 

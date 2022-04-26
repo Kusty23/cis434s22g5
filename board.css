@@ -53,7 +53,7 @@ body {
 }
 
 .dev {
-    display: inline;
+    display: none;
 }
 
 /* Rules Sidebar */
@@ -98,4 +98,5 @@ body {
     color: white;
     font-size: 20px;
     font-weight: bold;
+    display: none;
 }

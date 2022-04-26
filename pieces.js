@@ -310,6 +310,25 @@ class Pawn extends Piece {
 
         return moves;
     }
+
+    // Promotion
+    updatePosition(position, computer) {
+        super.updatePosition(position, computer);
+        if (this.color == "white" && this.position < 8 && this.alive) {
+            gameboard[this.position] = new Queen(this.position, "white");
+            gameboard[this.position].create();
+            this.wrapper.remove();
+            this.kill();
+            whitePieces.push(gameboard[this.position]);
+            console.log(gameboard);
+        } else if (this.color == "black" && this.position > 55 && this.alive) {
+            gameboard[this.position] = new Queen(this.position, "black");
+            gameboard[this.position].create();
+            this.wrapper.remove();
+            this.kill();
+            blackPieces.push(gameboard[this.position]);
+        }
+    } 
 }
 
 // Rook subclass of Piece
@@ -1345,5 +1364,4 @@ function pinnedFilter(piece, moves) {
             }
         }
     }
-
 }
